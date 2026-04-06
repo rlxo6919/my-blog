@@ -9,7 +9,7 @@ import {
 } from "@/lib/posts";
 import { notFound } from "next/navigation";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ttukttak.dev";
+const SITE_URL = "https://ttukttak-coding.vercel.app";
 import CodeHighlight from "@/components/CodeHighlight";
 import ScrollProgress from "@/components/ScrollProgress";
 import MobileToc from "@/components/MobileToc";

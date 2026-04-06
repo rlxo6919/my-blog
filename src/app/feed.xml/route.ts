@@ -1,7 +1,7 @@
 import { Feed } from "feed";
 import { getAllPosts } from "@/lib/posts";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ttukttak.dev";
+const SITE_URL = "https://ttukttak-coding.vercel.app";
 
 export async function GET() {
   const posts = getAllPosts();
