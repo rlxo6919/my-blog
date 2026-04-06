@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getAllPosts, getAllTags } from "@/lib/posts";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ttuktak.dev";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ttukttak.dev";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const posts = getAllPosts();
