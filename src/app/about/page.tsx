@@ -5,6 +5,20 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "소개",
   description: "뚝딱코딩 블로그와 운영자를 소개합니다.",
+  alternates: {
+    canonical: "/about",
+  },
+  openGraph: {
+    title: "소개 | 뚝딱코딩",
+    description: "뚝딱코딩 블로그와 운영자를 소개합니다.",
+    url: "https://ttukttak-coding.vercel.app/about",
+    type: "profile",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "소개 | 뚝딱코딩",
+    description: "뚝딱코딩 블로그와 운영자를 소개합니다.",
+  },
 };
 
 export default function AboutPage() {

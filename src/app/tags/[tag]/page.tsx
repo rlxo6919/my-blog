@@ -17,6 +17,20 @@ export async function generateMetadata(
   return {
     title: `#${decoded}`,
     description: `"${decoded}" 태그가 포함된 글 목록`,
+    alternates: {
+      canonical: `/tags/${encodeURIComponent(decoded)}`,
+    },
+    openGraph: {
+      title: `#${decoded} | 뚝딱코딩`,
+      description: `"${decoded}" 태그가 포함된 글 목록`,
+      url: `https://ttukttak-coding.vercel.app/tags/${encodeURIComponent(decoded)}`,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `#${decoded} | 뚝딱코딩`,
+      description: `"${decoded}" 태그가 포함된 글 목록`,
+    },
   };
 }
 

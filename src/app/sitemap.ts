@@ -6,6 +6,7 @@ const SITE_URL = "https://ttukttak-coding.vercel.app";
 export default function sitemap(): MetadataRoute.Sitemap {
   const posts = getAllPosts();
   const tags = getAllTags();
+  const latestPostDate = posts.length > 0 ? new Date(posts[0].date) : new Date();
 
   const postEntries = posts.map((post) => ({
     url: `${SITE_URL}/posts/${post.slug}`,
@@ -14,16 +15,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  const tagEntries = tags.map((tag) => ({
-    url: `${SITE_URL}/tags/${encodeURIComponent(tag)}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.5,
-  }));
+  const tagEntries = tags.map((tag) => {
+    const taggedPosts = posts.filter((post) => post.tags.includes(tag));
+    const lastModified =
+      taggedPosts.length > 0 ? new Date(taggedPosts[0].date) : latestPostDate;
+
+    return {
+      url: `${SITE_URL}/tags/${encodeURIComponent(tag)}`,
+      lastModified,
+      changeFrequency: "weekly" as const,
+      priority: 0.5,
+    };
+  });
 
   return [
-    { url: SITE_URL, lastModified: new Date(), changeFrequency: "daily", priority: 1 },
-    { url: `${SITE_URL}/tags`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.6 },
+    { url: SITE_URL, lastModified: latestPostDate, changeFrequency: "daily", priority: 1 },
+    { url: `${SITE_URL}/about`, lastModified: latestPostDate, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${SITE_URL}/privacy`, lastModified: latestPostDate, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${SITE_URL}/tags`, lastModified: latestPostDate, changeFrequency: "weekly", priority: 0.6 },
     ...postEntries,
     ...tagEntries,
   ];

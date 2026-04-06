@@ -32,9 +32,13 @@ export async function generateMetadata(
   return {
     title: post.title,
     description: post.excerpt || `${post.title} - 뚝딱코딩`,
+    alternates: {
+      canonical: `/posts/${slug}`,
+    },
     openGraph: {
       title: post.title,
       description: post.excerpt || `${post.title} - 뚝딱코딩`,
+      url: `${SITE_URL}/posts/${slug}`,
       type: "article",
       publishedTime: post.date,
       tags: post.tags,
@@ -63,9 +67,19 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
     headline: post.title,
     description: post.excerpt,
     datePublished: post.date,
+    dateModified: post.date,
     url: `${SITE_URL}/posts/${slug}`,
+    mainEntityOfPage: `${SITE_URL}/posts/${slug}`,
+    image: `${SITE_URL}/posts/${slug}/opengraph-image`,
     author: { "@type": "Person", name: "뚝딱코딩" },
-    publisher: { "@type": "Organization", name: "뚝딱코딩" },
+    publisher: {
+      "@type": "Organization",
+      name: "뚝딱코딩",
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/icon.png`,
+      },
+    },
     keywords: post.tags,
   };
 

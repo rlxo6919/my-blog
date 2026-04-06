@@ -19,6 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 const SITE_URL = "https://ttukttak-coding.vercel.app";
+const GOOGLE_SITE_VERIFICATION = process.env.GOOGLE_SITE_VERIFICATION;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -40,6 +41,11 @@ export const metadata: Metadata = {
   alternates: {
     types: { "application/rss+xml": "/feed.xml" },
   },
+  verification: GOOGLE_SITE_VERIFICATION
+    ? {
+        google: GOOGLE_SITE_VERIFICATION,
+      }
+    : undefined,
 };
 
 export default function RootLayout({

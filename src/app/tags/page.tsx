@@ -5,6 +5,20 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "태그",
   description: "뚝딱코딩의 모든 태그 목록",
+  alternates: {
+    canonical: "/tags",
+  },
+  openGraph: {
+    title: "태그 | 뚝딱코딩",
+    description: "뚝딱코딩의 모든 태그 목록",
+    url: "https://ttukttak-coding.vercel.app/tags",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "태그 | 뚝딱코딩",
+    description: "뚝딱코딩의 모든 태그 목록",
+  },
 };
 
 const TAG_COLORS = [

@@ -4,6 +4,20 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "개인정보처리방침",
   description: "뚝딱코딩의 개인정보처리방침",
+  alternates: {
+    canonical: "/privacy",
+  },
+  openGraph: {
+    title: "개인정보처리방침 | 뚝딱코딩",
+    description: "뚝딱코딩의 개인정보처리방침",
+    url: "https://ttukttak-coding.vercel.app/privacy",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "개인정보처리방침 | 뚝딱코딩",
+    description: "뚝딱코딩의 개인정보처리방침",
+  },
 };
 
 export default function PrivacyPage() {
@@ -25,8 +39,8 @@ export default function PrivacyPage() {
             다만, 아래의 경우 자동으로 정보가 수집될 수 있습니다.
           </p>
           <ul className="list-disc pl-5 mt-3 space-y-1.5 text-sm">
-            <li>방문 시 IP 주소, 브라우저 종류, 접속 시간 등 (서버 로그)</li>
-            <li>쿠키를 통한 방문 기록 (Google Analytics, 광고 서비스 등 이용 시)</li>
+            <li>방문 시 IP 주소, 브라우저 종류, 접속 시간 등 기본적인 접속 정보</li>
+            <li>서비스 운영 및 방문 통계 확인을 위한 익명화된 이용 정보</li>
           </ul>
         </section>
 
@@ -36,7 +50,6 @@ export default function PrivacyPage() {
           </h2>
           <ul className="list-disc pl-5 space-y-1.5 text-sm">
             <li>블로그 이용 통계 분석 및 서비스 개선</li>
-            <li>맞춤형 광고 제공 (광고 서비스 이용 시)</li>
           </ul>
         </section>
 
@@ -45,45 +58,33 @@ export default function PrivacyPage() {
             3. 쿠키(Cookie) 사용
           </h2>
           <p>
-            본 블로그는 사용자 경험 개선 및 광고 서비스를 위해 쿠키를 사용할 수 있습니다.
-            쿠키는 브라우저 설정을 통해 거부할 수 있으며, 거부 시 일부 서비스 이용에
-            제한이 있을 수 있습니다.
+            본 블로그는 서비스 제공 과정에서 필요한 범위 내에서 쿠키 또는 유사 기술을
+            사용할 수 있습니다. 쿠키 사용 여부와 방식은 브라우저 설정에서 제어할 수 있으며,
+            일부 기능은 설정에 따라 정상적으로 동작하지 않을 수 있습니다.
           </p>
         </section>
 
         <section>
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
-            4. 광고 서비스
+            4. 방문 통계 분석
           </h2>
           <p>
-            본 블로그는 Google AdSense 등 제3자 광고 서비스를 이용할 수 있습니다.
-            이러한 광고 서비스 제공업체는 사용자의 관심사에 기반한 광고를 제공하기 위해
-            쿠키를 사용할 수 있습니다.
+            본 블로그는 방문 통계 확인과 서비스 개선을 위해 <strong>Vercel Analytics</strong>를
+            사용할 수 있습니다. 이 과정에서 페이지 조회, 브라우저, 유입 경로, 국가 수준의
+            익명화된 방문 정보가 처리될 수 있습니다.
           </p>
           <ul className="list-disc pl-5 mt-3 space-y-1.5 text-sm">
             <li>
-              Google의 광고 쿠키 사용에 대한 자세한 내용은{" "}
+              자세한 내용은{" "}
               <a
-                href="https://policies.google.com/technologies/ads"
+                href="https://vercel.com/docs/analytics"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 dark:text-blue-400 underline underline-offset-2"
               >
-                Google 광고 정책
+                Vercel Analytics 문서
               </a>
-              을 참고하시기 바랍니다.
-            </li>
-            <li>
-              사용자는{" "}
-              <a
-                href="https://www.google.com/settings/ads"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 dark:text-blue-400 underline underline-offset-2"
-              >
-                Google 광고 설정
-              </a>
-              에서 맞춤 광고를 비활성화할 수 있습니다.
+              를 참고하시기 바랍니다.
             </li>
           </ul>
         </section>
@@ -104,8 +105,9 @@ export default function PrivacyPage() {
             6. 개인정보의 보유 및 파기
           </h2>
           <p>
-            서버 로그는 일정 기간 후 자동 삭제되며, 그 외 수집된 정보는
-            이용 목적이 달성된 후 지체 없이 파기합니다.
+            서버 로그 및 통계성 데이터는 각 서비스 제공자의 정책과 운영 목적에 따라
+            필요한 기간 동안 보관될 수 있으며, 목적 달성 후 더 이상 필요하지 않으면
+            삭제되거나 비식별화된 형태로만 유지됩니다.
           </p>
         </section>
 
