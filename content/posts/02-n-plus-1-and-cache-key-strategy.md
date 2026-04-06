@@ -112,7 +112,7 @@ TransactionTemplate(transactionManager).apply {
 }
 ```
 
-> **참고:** `@Transactional`은 프록시 기반이라 같은 클래스 내부 호출에서 동작하지 않을 수 있습니다. `TransactionTemplate`을 사용하면 트랜잭션 범위를 코드 레벨에서 명확하게 제어할 수 있고, `isReadOnly = true`로 Hibernate의 dirty checking 비용도 제거할 수 있습니다.
+> **참고:** `@Transactional`은 프록시 기반이라 같은 클래스 내부 호출에서 동작하지 않을 수 있습니다. `TransactionTemplate`을 사용하면 트랜잭션 범위를 코드 레벨에서 명확하게 제어할 수 있고, `isReadOnly = true`는 Spring/Hibernate 환경에서 flush와 변경 감지 비용을 줄이는 데 도움이 될 수 있습니다.
 
 ---
 
