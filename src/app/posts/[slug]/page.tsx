@@ -8,6 +8,8 @@ import {
   extractToc,
 } from "@/lib/posts";
 import { notFound } from "next/navigation";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ttukttak.dev";
 import CodeHighlight from "@/components/CodeHighlight";
 import ScrollProgress from "@/components/ScrollProgress";
 import MobileToc from "@/components/MobileToc";
@@ -54,8 +56,24 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
   const toc = extractToc(post.content);
   const { prev, next } = getAdjacentPosts(slug);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.excerpt,
+    datePublished: post.date,
+    url: `${SITE_URL}/posts/${slug}`,
+    author: { "@type": "Person", name: "뚝딱코딩" },
+    publisher: { "@type": "Organization", name: "뚝딱코딩" },
+    keywords: post.tags,
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <ScrollProgress />
       <div className="flex gap-10">
         <article className="flex-1 min-w-0">
