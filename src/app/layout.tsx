@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import Image from "next/image";
@@ -96,6 +97,7 @@ export default function RootLayout({
         <main className="mx-auto max-w-5xl w-full px-6 py-10 flex-1">
           {children}
         </main>
+        <Analytics />
         <footer className="border-t border-gray-200 dark:border-gray-800">
           <div className="mx-auto max-w-5xl px-6 py-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 dark:text-gray-400">
