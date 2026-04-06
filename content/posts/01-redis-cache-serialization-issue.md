@@ -54,7 +54,7 @@ fun defaultRedisCacheConfiguration(objectMapper: ObjectMapper): RedisCacheConfig
 
 이것만으로도 Redis CLI에서 데이터를 JSON으로 직접 확인할 수 있게 되었고, 디버깅이 훨씬 수월해졌습니다.
 
-> **참고:** `GenericJackson2JsonRedisSerializer()`를 인자 없이 사용하면 내부적으로 `DefaultTyping.EVERYTHING`이 활성화된 ObjectMapper를 생성합니다. 하지만 프로젝트의 Jackson 설정(모듈, 날짜 포맷 등)을 유지하려면 기존 ObjectMapper를 주입받아야 하고, 이 경우 default typing이 빠지면서 Phase 2의 문제가 발생합니다.
+> **참고:** `GenericJackson2JsonRedisSerializer()`를 인자 없이 사용하면 내부적으로 `DefaultTyping.EVERYTHING`이 활성화된 ObjectMapper를 생성합니다 (Spring Data Redis 3.x 기준). 하지만 프로젝트의 Jackson 설정(모듈, 날짜 포맷 등)을 유지하려면 기존 ObjectMapper를 주입받아야 하고, 이 경우 default typing이 빠지면서 Phase 2의 문제가 발생합니다.
 
 ### 직렬화 전략 분리
 
@@ -125,7 +125,7 @@ val typedObjectMapper = objectMapper.copy()
 {"id": "abc123", ...}  // 타입 정보 없음!
 ```
 
-역직렬화 시 `START_OBJECT` vs `START_ARRAY` 불일치 에러가 발생했습니다.
+결과적으로 **`LinkedHashMap`으로 역직렬화되는 문제**가 그대로 남았습니다. 여기에 Phase 1에서 타입 정보 없이 저장된 기존 캐시 데이터가 Redis에 남아 있는 상태에서 `NON_FINAL`을 활성화하면, 역직렬화기가 non-final 타입 필드에 대해 `["type", {...}]`(START_ARRAY) 형태의 타입 래퍼를 기대하지만 실제 데이터는 `{...}`(START_OBJECT)여서 `START_OBJECT` vs `START_ARRAY` 불일치 에러도 함께 발생했습니다.
 
 ### 해결: EVERYTHING
 

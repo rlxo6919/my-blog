@@ -232,7 +232,7 @@ mm.fields(
 | `.ngram` | 1 | 부분 문자열 매칭 (recall 확보) |
 
 **검색 연산자:**
-- `TextQueryType.CrossFields`: 검색어 토큰을 여러 필드에 걸쳐 매칭
+- `TextQueryType.CrossFields`: 검색어 토큰을 여러 필드에 걸쳐 매칭. 단, analyzer가 서로 다른 필드는 별도 그룹으로 나뉘어 처리됩니다
 - `Operator.And`: 모든 토큰이 매칭되어야 결과에 포함
 
 예시: "마르디 원피스" 검색 시
