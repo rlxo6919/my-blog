@@ -18,10 +18,22 @@ export interface Post {
 }
 
 function estimateReadingTime(text: string): number {
-  // 한국어는 분당 약 500자, 영어는 약 200단어
-  const koreanChars = (text.match(/[가-힣]/g) || []).length;
-  const englishWords = text.replace(/[가-힣]/g, "").split(/\s+/).filter(Boolean).length;
-  const minutes = koreanChars / 500 + englishWords / 200;
+  // 코드 블록 제거 (읽기 시간에서 코드는 별도 가중치)
+  const codeBlocks = (text.match(/```[\s\S]*?```/g) || []);
+  const codeLines = codeBlocks.reduce((sum, block) => sum + block.split("\n").length - 2, 0);
+  const withoutCode = text.replace(/```[\s\S]*?```/g, "").replace(/`[^`]+`/g, "");
+
+  // 마크다운 문법 제거
+  const cleaned = withoutCode
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/!\[.*?]\(.*?\)/g, "")
+    .replace(/\[([^]*)]\(.*?\)/g, "$1")
+    .replace(/[*_~>`-]{1,3}/g, "");
+
+  // 한국어는 분당 약 500자, 영어는 약 200단어, 코드는 분당 약 20줄
+  const koreanChars = (cleaned.match(/[가-힣]/g) || []).length;
+  const englishWords = cleaned.replace(/[가-힣]/g, "").split(/\s+/).filter(Boolean).length;
+  const minutes = koreanChars / 500 + englishWords / 200 + codeLines / 20;
   return Math.max(1, Math.round(minutes));
 }
 
