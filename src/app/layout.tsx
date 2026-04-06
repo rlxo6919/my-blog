@@ -41,9 +41,6 @@ export default function RootLayout({
               <Link href="/tags" className="hover:text-gray-600">
                 태그
               </Link>
-              <Link href="/feed.xml" className="hover:text-gray-600">
-                RSS
-              </Link>
             </div>
           </nav>
         </header>
