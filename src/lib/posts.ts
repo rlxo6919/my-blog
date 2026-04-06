@@ -3,6 +3,7 @@ import path from "path";
 import matter from "gray-matter";
 import { remark } from "remark";
 import html from "remark-html";
+import remarkGfm from "remark-gfm";
 
 const postsDirectory = path.join(process.cwd(), "content/posts");
 
@@ -13,6 +14,15 @@ export interface Post {
   tags: string[];
   excerpt: string;
   content: string;
+  readingTime: number;
+}
+
+function estimateReadingTime(text: string): number {
+  // 한국어는 분당 약 500자, 영어는 약 200단어
+  const koreanChars = (text.match(/[가-힣]/g) || []).length;
+  const englishWords = text.replace(/[가-힣]/g, "").split(/\s+/).filter(Boolean).length;
+  const minutes = koreanChars / 500 + englishWords / 200;
+  return Math.max(1, Math.round(minutes));
 }
 
 export function getAllPosts(): Post[] {
@@ -32,6 +42,7 @@ export function getAllPosts(): Post[] {
         tags: data.tags ?? [],
         excerpt: data.excerpt ?? "",
         content,
+        readingTime: estimateReadingTime(content),
       };
     });
 
@@ -52,11 +63,21 @@ export function getPostBySlug(slug: string): Post | undefined {
     tags: data.tags ?? [],
     excerpt: data.excerpt ?? "",
     content,
+    readingTime: estimateReadingTime(content),
+  };
+}
+
+export function getAdjacentPosts(slug: string) {
+  const posts = getAllPosts();
+  const index = posts.findIndex((p) => p.slug === slug);
+  return {
+    prev: index < posts.length - 1 ? posts[index + 1] : null,
+    next: index > 0 ? posts[index - 1] : null,
   };
 }
 
 export async function markdownToHtml(markdown: string): Promise<string> {
-  const result = await remark().use(html).process(markdown);
+  const result = await remark().use(remarkGfm).use(html, { sanitize: false }).process(markdown);
   let htmlString = result.toString();
 
   // h2, h3 태그에 id 속성 추가

@@ -1,15 +1,47 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   getAllPosts,
   getPostBySlug,
+  getAdjacentPosts,
   markdownToHtml,
   extractToc,
 } from "@/lib/posts";
 import { notFound } from "next/navigation";
+import CodeHighlight from "@/components/CodeHighlight";
+import ScrollProgress from "@/components/ScrollProgress";
+import MobileToc from "@/components/MobileToc";
+import ShareButtons from "@/components/ShareButtons";
+import Giscus from "@/components/Giscus";
 
 export function generateStaticParams() {
   const posts = getAllPosts();
   return posts.map((post) => ({ slug: post.slug }));
+}
+
+export async function generateMetadata(
+  props: { params: Promise<{ slug: string }> }
+): Promise<Metadata> {
+  const { slug } = await props.params;
+  const post = getPostBySlug(slug);
+  if (!post) return {};
+
+  return {
+    title: post.title,
+    description: post.excerpt || `${post.title} - 뚝딱코딩`,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt || `${post.title} - 뚝딱코딩`,
+      type: "article",
+      publishedTime: post.date,
+      tags: post.tags,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt || `${post.title} - 뚝딱코딩`,
+    },
+  };
 }
 
 export default async function PostPage(props: PageProps<"/posts/[slug]">) {
@@ -20,63 +52,126 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
 
   const content = await markdownToHtml(post.content);
   const toc = extractToc(post.content);
+  const { prev, next } = getAdjacentPosts(slug);
 
   return (
-    <div className="flex gap-10">
-      <article className="flex-1 min-w-0">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold">{post.title}</h1>
-          <time className="text-sm text-gray-500 mt-2 block">{post.date}</time>
-          {post.tags.length > 0 && (
-            <div className="flex gap-2 mt-3">
-              {post.tags.map((tag) => (
+    <>
+      <ScrollProgress />
+      <div className="flex gap-10">
+        <article className="flex-1 min-w-0">
+          <header className="mb-8">
+            <h1 className="text-3xl font-bold">{post.title}</h1>
+            <div className="flex items-center gap-3 mt-2 text-sm text-gray-500 dark:text-gray-400">
+              <time>{post.date}</time>
+              <span>&middot;</span>
+              <span>{post.readingTime}분 읽기</span>
+            </div>
+            {post.tags.length > 0 && (
+              <div className="flex gap-2 mt-3">
+                {post.tags.map((tag) => (
+                  <Link
+                    key={tag}
+                    href={`/tags/${tag}`}
+                    className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2.5 py-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    #{tag}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </header>
+
+          <MobileToc toc={toc} />
+
+          <div
+            className="prose prose-gray dark:prose-invert max-w-none"
+            dangerouslySetInnerHTML={{ __html: content }}
+          />
+          <CodeHighlight />
+
+          {/* 공유 + 목록 */}
+          <div className="mt-10 pt-6 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <Link
+              href="/"
+              className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
+            >
+              &larr; 목록으로
+            </Link>
+            <ShareButtons title={post.title} />
+          </div>
+
+          {/* 이전/다음 글 */}
+          {(prev || next) && (
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {prev ? (
                 <Link
-                  key={tag}
-                  href={`/tags/${tag}`}
-                  className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200"
+                  href={`/posts/${prev.slug}`}
+                  className="group p-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 bg-white dark:bg-gray-900/50 hover:shadow-lg hover:shadow-gray-100/50 dark:hover:shadow-none transition-all duration-300"
                 >
-                  {tag}
+                  <span className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 mb-2">
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    이전 글
+                  </span>
+                  <p className="text-sm font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                    {prev.title}
+                  </p>
                 </Link>
-              ))}
+              ) : (
+                <div />
+              )}
+              {next ? (
+                <Link
+                  href={`/posts/${next.slug}`}
+                  className="group p-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 bg-white dark:bg-gray-900/50 hover:shadow-lg hover:shadow-gray-100/50 dark:hover:shadow-none transition-all duration-300 text-right"
+                >
+                  <span className="flex items-center justify-end gap-1 text-xs text-gray-400 dark:text-gray-500 mb-2">
+                    다음 글
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </span>
+                  <p className="text-sm font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                    {next.title}
+                  </p>
+                </Link>
+              ) : (
+                <div />
+              )}
             </div>
           )}
-        </header>
-        <div
-          className="prose prose-gray max-w-none"
-          dangerouslySetInnerHTML={{ __html: content }}
-        />
-        <div className="mt-10 pt-6 border-t border-gray-200">
-          <Link
-            href="/"
-            className="text-sm text-gray-600 hover:text-gray-900"
-          >
-            &larr; 목록으로 돌아가기
-          </Link>
-        </div>
-      </article>
 
-      {toc.length > 0 && (
-        <aside className="hidden lg:block w-56 shrink-0">
-          <nav className="sticky top-10">
-            <h2 className="text-sm font-semibold text-gray-900 mb-3">목차</h2>
-            <ul className="space-y-2 text-sm">
-              {toc.map((item) => (
-                <li
-                  key={item.id}
-                  className={item.level === 3 ? "pl-3" : ""}
-                >
-                  <a
-                    href={`#${item.id}`}
-                    className="text-gray-500 hover:text-gray-900"
+          {/* 댓글 */}
+          <Giscus />
+        </article>
+
+        {/* 사이드 목차 (데스크탑) */}
+        {toc.length > 0 && (
+          <aside className="hidden lg:block w-56 shrink-0">
+            <nav className="sticky top-20">
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                목차
+              </h2>
+              <ul className="space-y-2 text-sm border-l-2 border-gray-100 dark:border-gray-800">
+                {toc.map((item) => (
+                  <li
+                    key={item.id}
+                    className={item.level === 3 ? "pl-6" : "pl-3"}
                   >
-                    {item.text}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </aside>
-      )}
-    </div>
+                    <a
+                      href={`#${item.id}`}
+                      className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
+                    >
+                      {item.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </aside>
+        )}
+      </div>
+    </>
   );
 }
