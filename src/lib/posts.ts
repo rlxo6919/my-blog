@@ -7,10 +7,15 @@ import remarkGfm from "remark-gfm";
 
 const postsDirectory = path.join(process.cwd(), "content/posts");
 
+import type { Category } from "./categories";
+export type { Category };
+export { CATEGORY_LABELS } from "./categories";
+
 export interface Post {
   slug: string;
   title: string;
   date: string;
+  category: Category;
   tags: string[];
   excerpt: string;
   content: string;
@@ -51,6 +56,7 @@ export function getAllPosts(): Post[] {
         slug,
         title: data.title ?? slug,
         date: data.date ?? "",
+        category: data.category ?? "troubleshooting",
         tags: data.tags ?? [],
         excerpt: data.excerpt ?? "",
         content,
@@ -72,6 +78,7 @@ export function getPostBySlug(slug: string): Post | undefined {
     slug,
     title: data.title ?? slug,
     date: data.date ?? "",
+    category: data.category ?? "troubleshooting",
     tags: data.tags ?? [],
     excerpt: data.excerpt ?? "",
     content,

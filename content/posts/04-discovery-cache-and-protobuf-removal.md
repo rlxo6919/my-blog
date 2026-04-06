@@ -1,6 +1,7 @@
 ---
 title: "Discovery 모듈 성능 개선기 — Protobuf 제거, 캐시 도입, 검색 정확도 향상"
 date: "2026-04-06"
+category: "troubleshooting"
 tags: ["Kotlin", "Redis", "OpenSearch", "Spring Boot"]
 excerpt: "Service에 침투한 Protobuf, 상품 목록 N+1, 매 요청마다 DB 조회, 공백 검색 불일치 — 네 가지 문제를 해결한 과정을 공유합니다."
 ---

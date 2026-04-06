@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllTags, getPostsByTag } from "@/lib/posts";
+import { CATEGORY_LABELS } from "@/lib/categories";
 import { notFound } from "next/navigation";
 
 export function generateStaticParams() {
@@ -41,6 +42,20 @@ export default async function TagPage(props: PageProps<"/tags/[tag]">) {
                 {post.title}
               </h2>
               <div className="flex items-center gap-3 mt-1 text-sm text-gray-500 dark:text-gray-400">
+                <span
+                  className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full border ${
+                    post.category === "troubleshooting"
+                      ? "bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800"
+                      : "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800"
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      post.category === "troubleshooting" ? "bg-amber-500" : "bg-emerald-500"
+                    }`}
+                  />
+                  {CATEGORY_LABELS[post.category]}
+                </span>
                 <time>{post.date}</time>
                 <span>&middot;</span>
                 <span>{post.readingTime}분 읽기</span>

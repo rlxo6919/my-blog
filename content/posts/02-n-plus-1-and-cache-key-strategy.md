@@ -1,6 +1,7 @@
 ---
 title: "N+1 쿼리와 캐시 미스 — 커뮤니티 모듈 성능 개선기"
 date: "2026-04-06"
+category: "troubleshooting"
 tags: ["Kotlin", "JPA", "Redis", "N+1", "Spring Boot"]
 excerpt: "리뷰 목록 40번 쿼리, 해시태그 N+1, 캐시 적중률 0%에 가까운 등급 뱃지 — 세 가지 성능 문제를 해결한 과정을 공유합니다."
 ---

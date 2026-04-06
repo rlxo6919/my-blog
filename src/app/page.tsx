@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getAllPosts, getAllTags, getPostsByTag } from "@/lib/posts";
+import PostList from "@/components/PostList";
 
 export default function Home() {
   const posts = getAllPosts();
@@ -62,63 +63,11 @@ export default function Home() {
           <span className="w-1 h-5 bg-blue-500 rounded-full" />
           최근 글
         </h2>
-        <div className="grid gap-4">
-          {posts.map((post, i) => (
-            <article
-              key={post.slug}
-              className="group relative p-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 bg-white dark:bg-gray-900/50 hover:shadow-lg hover:shadow-gray-100/50 dark:hover:shadow-none transition-all duration-300"
-            >
-              {i === 0 && (
-                <span className="absolute -top-2.5 left-4 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-blue-500 text-white rounded-full">
-                  Latest
-                </span>
-              )}
-              <Link href={`/posts/${post.slug}`} className="block">
-                <h3 className="text-lg font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                  {post.title}
-                </h3>
-                <div className="flex items-center gap-3 mt-2 text-sm text-gray-500 dark:text-gray-400">
-                  <time className="flex items-center gap-1">
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    {post.date}
-                  </time>
-                  <span>&middot;</span>
-                  <span className="flex items-center gap-1">
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    {post.readingTime}분
-                  </span>
-                </div>
-                {post.excerpt && (
-                  <p className="text-gray-600 dark:text-gray-400 mt-3 line-clamp-2 text-sm leading-relaxed">
-                    {post.excerpt}
-                  </p>
-                )}
-              </Link>
-              {post.tags.length > 0 && (
-                <div className="flex gap-2 mt-4">
-                  {post.tags.map((tag) => (
-                    <Link
-                      key={tag}
-                      href={`/tags/${tag}`}
-                      className="text-xs font-medium bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 px-2.5 py-1 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                    >
-                      #{tag}
-                    </Link>
-                  ))}
-                </div>
-              )}
-              <div className="absolute right-5 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-gray-300 dark:text-gray-600">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-            </article>
-          ))}
-        </div>
+        <PostList
+          posts={posts.map(({ slug, title, date, category, tags, excerpt, readingTime }) => ({
+            slug, title, date, category, tags, excerpt, readingTime,
+          }))}
+        />
       </section>
     </div>
   );
