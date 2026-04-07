@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import ThemeToggle from "@/components/ThemeToggle";
 import Search from "@/components/Search";
+import MobileNav from "@/components/MobileNav";
 import { getAllPosts } from "@/lib/posts";
 import "./globals.css";
 
@@ -77,13 +78,13 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors">
         <header className="border-b border-gray-200 dark:border-gray-800 sticky top-0 bg-white/80 dark:bg-gray-950/80 backdrop-blur-sm z-40">
-          <nav className="mx-auto max-w-5xl px-6 h-14 flex items-center justify-between">
+          <nav className="mx-auto max-w-5xl px-4 sm:px-6 h-14 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 hover:opacity-70 transition-opacity">
               <Image src="/icon.png" alt="뚝딱코딩 로고" width={24} height={24} />
               <span className="font-bold text-base">뚝딱코딩</span>
             </Link>
             <div className="flex items-center">
-              <div className="flex items-center gap-1 mr-2">
+              <div className="hidden sm:flex items-center gap-1 mr-2">
                 <Link href="/" className="px-3 py-1.5 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                   홈
                 </Link>
@@ -94,19 +95,20 @@ export default function RootLayout({
                   소개
                 </Link>
               </div>
-              <div className="flex items-center gap-0.5 border-l border-gray-200 dark:border-gray-800 pl-2">
+              <div className="flex items-center gap-0.5 sm:border-l border-gray-200 dark:border-gray-800 sm:pl-2">
                 <Search posts={posts} />
                 <ThemeToggle />
               </div>
+              <MobileNav />
             </div>
           </nav>
         </header>
-        <main className="mx-auto max-w-5xl w-full px-6 py-10 flex-1">
+        <main className="mx-auto max-w-5xl w-full px-4 sm:px-6 py-6 sm:py-10 flex-1">
           {children}
         </main>
         <Analytics />
         <footer className="border-t border-gray-200 dark:border-gray-800">
-          <div className="mx-auto max-w-5xl px-6 py-8">
+          <div className="mx-auto max-w-5xl px-4 sm:px-6 py-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 dark:text-gray-400">
               <span>&copy; {new Date().getFullYear()} 뚝딱코딩</span>
               <div className="flex items-center gap-4">

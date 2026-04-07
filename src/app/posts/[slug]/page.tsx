@@ -94,9 +94,9 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
       <ScrollProgress />
       <div className="flex gap-10">
         <article className="flex-1 min-w-0">
-          <header className="mb-8">
-            <h1 className="text-3xl font-bold">{post.title}</h1>
-            <div className="flex items-center gap-3 mt-2 text-sm text-gray-500 dark:text-gray-400">
+          <header className="mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold">{post.title}</h1>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-2 text-sm text-gray-500 dark:text-gray-400">
               <span
                 className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full border ${
                   post.category === "troubleshooting"
@@ -116,7 +116,7 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
               <span>{post.readingTime}분 읽기</span>
             </div>
             {post.tags.length > 0 && (
-              <div className="flex gap-2 mt-3">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-3">
                 {post.tags.map((tag) => (
                   <Link
                     key={tag}
@@ -133,13 +133,13 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
           <MobileToc toc={toc} />
 
           <div
-            className="prose prose-gray dark:prose-invert max-w-none"
+            className="prose prose-gray dark:prose-invert max-w-none prose-sm sm:prose-base"
             dangerouslySetInnerHTML={{ __html: content }}
           />
           <CodeHighlight />
 
           {/* 공유 + 목록 */}
-          <div className="mt-10 pt-6 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+          <div className="mt-8 sm:mt-10 pt-5 sm:pt-6 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
             <Link
               href="/"
               className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
@@ -155,7 +155,7 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
               {prev ? (
                 <Link
                   href={`/posts/${prev.slug}`}
-                  className="group p-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 bg-white dark:bg-gray-900/50 hover:shadow-lg hover:shadow-gray-100/50 dark:hover:shadow-none transition-all duration-300"
+                  className="group p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 bg-white dark:bg-gray-900/50 hover:shadow-lg hover:shadow-gray-100/50 dark:hover:shadow-none transition-all duration-300"
                 >
                   <span className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 mb-2">
                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -173,7 +173,7 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
               {next ? (
                 <Link
                   href={`/posts/${next.slug}`}
-                  className="group p-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 bg-white dark:bg-gray-900/50 hover:shadow-lg hover:shadow-gray-100/50 dark:hover:shadow-none transition-all duration-300 text-right"
+                  className="group p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 bg-white dark:bg-gray-900/50 hover:shadow-lg hover:shadow-gray-100/50 dark:hover:shadow-none transition-all duration-300 text-right"
                 >
                   <span className="flex items-center justify-end gap-1 text-xs text-gray-400 dark:text-gray-500 mb-2">
                     다음 글

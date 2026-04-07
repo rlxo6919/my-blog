@@ -60,6 +60,30 @@ main {
   overflow: hidden;
   background: #f0f2f5;
   border: 1px solid #d0d7de;
+  max-width: 100%;
+}
+
+@media (max-width: 639px) {
+  .prose pre {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+}
+
+/* 테이블 모바일 스크롤 */
+.prose table {
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 이미지 모바일 대응 */
+.prose img {
+  max-width: 100%;
+  height: auto;
 }
 
 .dark .prose pre {
@@ -69,10 +93,17 @@ main {
 
 .prose pre code {
   display: block;
-  padding: 1.25rem;
-  font-size: 0.875rem;
+  padding: 1rem;
+  font-size: 0.8125rem;
   line-height: 1.7;
   overflow-x: auto;
+}
+
+@media (min-width: 640px) {
+  .prose pre code {
+    padding: 1.25rem;
+    font-size: 0.875rem;
+  }
 }
 
 /* 코드 하이라이팅 - 라이트 모드 */

@@ -9,21 +9,21 @@ export default function Home() {
   return (
     <div>
       {/* 히어로 섹션 */}
-      <section className="relative mb-14 py-12 -mx-6 px-6 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/30 dark:via-indigo-950/30 dark:to-purple-950/30 rounded-3xl" />
+      <section className="relative mb-8 sm:mb-14 py-8 sm:py-12 -mx-4 sm:-mx-6 px-4 sm:px-6 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/30 dark:via-indigo-950/30 dark:to-purple-950/30 rounded-2xl sm:rounded-3xl" />
         <div className="absolute top-4 right-8 w-24 h-24 bg-blue-200/30 dark:bg-blue-500/10 rounded-full blur-2xl" />
         <div className="absolute bottom-4 left-12 w-32 h-32 bg-purple-200/30 dark:bg-purple-500/10 rounded-full blur-2xl" />
         <div className="relative">
           <div className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-2">
             개발 블로그
           </div>
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-600 dark:from-white dark:via-gray-200 dark:to-gray-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-600 dark:from-white dark:via-gray-200 dark:to-gray-400 bg-clip-text text-transparent">
             뚝딱코딩
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-lg">
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-lg">
             뚝딱뚝딱 만들어가는 개발 이야기. 배우고, 만들고, 공유합니다.
           </p>
-          <div className="flex gap-3 mt-6">
+          <div className="flex gap-3 mt-5 sm:mt-6">
             <Link
               href="/tags"
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors"

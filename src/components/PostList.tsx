@@ -40,10 +40,10 @@ export default function PostList({ posts }: { posts: PostItem[] }) {
   return (
     <>
       {/* 카테고리 탭 */}
-      <div className="flex items-center gap-2 mb-6">
+      <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-1 scrollbar-hide">
         <button
           onClick={() => setActive(null)}
-          className={`px-4 py-1.5 text-sm font-medium rounded-full border transition-all ${
+          className={`shrink-0 px-4 py-1.5 text-sm font-medium rounded-full border transition-all ${
             active === null
               ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent"
               : "border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600"
@@ -58,7 +58,7 @@ export default function PostList({ posts }: { posts: PostItem[] }) {
             <button
               key={cat}
               onClick={() => setActive(active === cat ? null : cat)}
-              className={`px-4 py-1.5 text-sm font-medium rounded-full border transition-all ${
+              className={`shrink-0 px-4 py-1.5 text-sm font-medium rounded-full border transition-all ${
                 active === cat
                   ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent"
                   : "border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600"
@@ -77,7 +77,7 @@ export default function PostList({ posts }: { posts: PostItem[] }) {
           return (
             <article
               key={post.slug}
-              className="group relative p-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 bg-white dark:bg-gray-900/50 hover:shadow-lg hover:shadow-gray-100/50 dark:hover:shadow-none transition-all duration-300"
+              className="group relative p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 bg-white dark:bg-gray-900/50 hover:shadow-lg hover:shadow-gray-100/50 dark:hover:shadow-none transition-all duration-300"
             >
               {i === 0 && active === null && (
                 <span className="absolute -top-2.5 left-4 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-blue-500 text-white rounded-full">
@@ -93,7 +93,7 @@ export default function PostList({ posts }: { posts: PostItem[] }) {
                     {CATEGORY_LABELS[post.category]}
                   </span>
                 </div>
-                <h3 className="text-lg font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <h3 className="text-base sm:text-lg font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors pr-6 sm:pr-0">
                   {post.title}
                 </h3>
                 <div className="flex items-center gap-3 mt-2 text-sm text-gray-500 dark:text-gray-400">
@@ -138,7 +138,7 @@ export default function PostList({ posts }: { posts: PostItem[] }) {
                 )}
               </Link>
               {post.tags.length > 0 && (
-                <div className="flex gap-2 mt-4">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-3 sm:mt-4">
                   {post.tags.map((tag) => (
                     <Link
                       key={tag}
@@ -150,7 +150,7 @@ export default function PostList({ posts }: { posts: PostItem[] }) {
                   ))}
                 </div>
               )}
-              <div className="absolute right-5 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-gray-300 dark:text-gray-600">
+              <div className="hidden sm:block absolute right-5 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-gray-300 dark:text-gray-600">
                 <svg
                   className="w-5 h-5"
                   fill="none"
