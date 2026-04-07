@@ -10,7 +10,7 @@ import {
 import { CATEGORY_LABELS } from "@/lib/categories";
 import { notFound } from "next/navigation";
 
-const SITE_URL = "https://ttukttak-coding.vercel.app";
+const SITE_URL = "https://www.ttukttak-coding.dev";
 import CodeHighlight from "@/components/CodeHighlight";
 import ScrollProgress from "@/components/ScrollProgress";
 import MobileToc from "@/components/MobileToc";
@@ -70,7 +70,7 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
     dateModified: post.date,
     url: `${SITE_URL}/posts/${slug}`,
     mainEntityOfPage: `${SITE_URL}/posts/${slug}`,
-    image: `${SITE_URL}/posts/${slug}/opengraph-image`,
+    image: `${SITE_URL}/opengraph-image.webp`,
     author: { "@type": "Person", name: "뚝딱코딩" },
     publisher: {
       "@type": "Organization",

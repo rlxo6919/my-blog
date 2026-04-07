@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "개인정보처리방침 | 뚝딱코딩",
     description: "뚝딱코딩의 개인정보처리방침",
-    url: "https://ttukttak-coding.vercel.app/privacy",
+    url: "https://www.ttukttak-coding.dev/privacy",
     type: "website",
   },
   twitter: {

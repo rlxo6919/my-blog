@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getAllPosts, getAllTags } from "@/lib/posts";
 
-const SITE_URL = "https://ttukttak-coding.vercel.app";
+const SITE_URL = "https://www.ttukttak-coding.dev";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const posts = getAllPosts();

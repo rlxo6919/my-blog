@@ -23,7 +23,7 @@ export async function generateMetadata(
     openGraph: {
       title: `#${decoded} | 뚝딱코딩`,
       description: `"${decoded}" 태그가 포함된 글 목록`,
-      url: `https://ttukttak-coding.vercel.app/tags/${encodeURIComponent(decoded)}`,
+      url: `https://www.ttukttak-coding.dev/tags/${encodeURIComponent(decoded)}`,
       type: "website",
     },
     twitter: {

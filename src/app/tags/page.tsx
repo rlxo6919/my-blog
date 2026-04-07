@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "태그 | 뚝딱코딩",
     description: "뚝딱코딩의 모든 태그 목록",
-    url: "https://ttukttak-coding.vercel.app/tags",
+    url: "https://www.ttukttak-coding.dev/tags",
     type: "website",
   },
   twitter: {
