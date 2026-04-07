@@ -13,11 +13,13 @@ export const metadata: Metadata = {
     description: "뚝딱코딩 블로그와 운영자를 소개합니다.",
     url: "https://www.ttukttak-coding.dev/about",
     type: "profile",
+    images: [{ url: "/opengraph-image.webp", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "소개 | 뚝딱코딩",
     description: "뚝딱코딩 블로그와 운영자를 소개합니다.",
+    images: ["/opengraph-image.webp"],
   },
 };
 

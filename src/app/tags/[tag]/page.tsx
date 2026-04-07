@@ -25,11 +25,13 @@ export async function generateMetadata(
       description: `"${decoded}" 태그가 포함된 글 목록`,
       url: `https://www.ttukttak-coding.dev/tags/${encodeURIComponent(decoded)}`,
       type: "website",
+      images: [{ url: "/opengraph-image.webp", width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
       title: `#${decoded} | 뚝딱코딩`,
       description: `"${decoded}" 태그가 포함된 글 목록`,
+      images: ["/opengraph-image.webp"],
     },
   };
 }

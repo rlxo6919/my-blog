@@ -32,11 +32,13 @@ export const metadata: Metadata = {
     siteName: "뚝딱코딩",
     locale: "ko_KR",
     type: "website",
+    images: [{ url: "/opengraph-image.webp", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "뚝딱코딩",
     description: "뚝딱뚝딱 만들어가는 개발 블로그",
+    images: ["/opengraph-image.webp"],
   },
   alternates: {
     types: { "application/rss+xml": "/feed.xml" },

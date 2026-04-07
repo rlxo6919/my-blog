@@ -12,11 +12,13 @@ export const metadata: Metadata = {
     description: "뚝딱코딩의 개인정보처리방침",
     url: "https://www.ttukttak-coding.dev/privacy",
     type: "website",
+    images: [{ url: "/opengraph-image.webp", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "개인정보처리방침 | 뚝딱코딩",
     description: "뚝딱코딩의 개인정보처리방침",
+    images: ["/opengraph-image.webp"],
   },
 };
 
