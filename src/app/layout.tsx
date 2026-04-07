@@ -20,7 +20,6 @@ const geistMono = Geist_Mono({
 
 const SITE_URL = "https://ttukttak-coding.vercel.app";
 const GOOGLE_SITE_VERIFICATION = process.env.GOOGLE_SITE_VERIFICATION;
-console.log("[DEBUG] GOOGLE_SITE_VERIFICATION:", GOOGLE_SITE_VERIFICATION);
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
