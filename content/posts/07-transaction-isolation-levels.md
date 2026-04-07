@@ -2,7 +2,7 @@
 title: "트랜잭션 격리 수준 완전 정복 — Read Uncommitted부터 Serializable까지"
 date: "2026-04-06"
 category: "study"
-tags: ["Database", "SQL", "Transaction"]
+tags: ["Database", "SQL", "Transaction", "MySQL", "PostgreSQL"]
 excerpt: "트랜잭션 격리 수준이 왜 필요한지, 각 레벨에서 어떤 이상 현상이 발생하는지 예제와 함께 정리합니다."
 ---
 
