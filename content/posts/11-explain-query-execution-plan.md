@@ -1,0 +1,483 @@
+---
+title: "실행 계획 완전 정복 — EXPLAIN으로 쿼리 옵티마이저의 선택을 읽는 법"
+date: "2026-04-08"
+category: "study"
+tags: ["Database", "SQL", "EXPLAIN", "MySQL", "PostgreSQL"]
+excerpt: "EXPLAIN 출력의 각 컬럼이 무엇을 뜻하는지, 옵티마이저가 왜 그 계획을 골랐는지, 조인과 서브쿼리는 어떻게 읽는지 예제와 함께 정리합니다."
+---
+
+## 실행 계획, 왜 읽을 줄 알아야 하나요?
+
+[인덱스 기본 글](/posts/06-index-tuning-fundamentals)에서 `EXPLAIN`의 핵심 컬럼을 간단히 살펴봤고, [인덱스가 안 타는 이유](/posts/10-why-indexes-are-not-used)에서 옵티마이저가 인덱스를 무시하는 원인을 정리했습니다. 하지만 실무에서는 이런 상황이 생깁니다.
+
+- `EXPLAIN` 결과가 여러 행인데 어느 행부터 읽어야 할지 모르겠습니다
+- `type`이 `ref`인데 왜 느린지 감이 안 잡힙니다
+- 서브쿼리와 조인이 섞인 쿼리의 실행 순서를 알 수 없습니다
+- `EXPLAIN`의 예상 `rows`와 실제 성능이 다른 것 같습니다
+
+`EXPLAIN`은 단순히 "인덱스를 탔는가"를 확인하는 도구가 아닙니다. **옵티마이저가 왜 그런 계획을 세웠는지**를 이해해야 올바른 튜닝 방향을 잡을 수 있습니다. 이 글에서는 MySQL을 기준으로 설명하며, PostgreSQL과 차이가 있는 부분은 별도로 표기합니다.
+
+## Phase 1. 옵티마이저는 어떻게 실행 계획을 결정하나요?
+
+### 비용 기반 옵티마이저(CBO)
+
+MySQL과 PostgreSQL 모두 **비용 기반 옵티마이저(Cost-Based Optimizer)** 를 사용합니다. 쿼리를 실행하는 방법은 여러 가지가 있고, 옵티마이저는 각 방법의 **예상 비용(cost)** 을 계산한 뒤 가장 저렴한 계획을 선택합니다.
+
+```
+쿼리 입력
+  ↓
+파싱 → 문법 확인, 구문 트리 생성
+  ↓
+옵티마이저 → 가능한 실행 계획 나열 → 각 계획의 비용 추정 → 최저 비용 계획 선택
+  ↓
+실행 엔진 → 선택된 계획대로 데이터 접근
+  ↓
+결과 반환
+```
+
+### 비용을 추정하는 재료
+
+옵티마이저가 비용을 계산할 때 사용하는 주요 정보입니다.
+
+- **테이블 통계** — 테이블의 전체 행 수, 인덱스별 카디널리티(고유 값 수)
+- **데이터 분포** — 특정 값이 몇 건이나 있는지에 대한 히스토그램(MySQL 8.0+)
+- **I/O 비용** — 디스크에서 페이지를 읽는 비용과 메모리에서 읽는 비용의 차이
+- **CPU 비용** — 행을 비교하고 정렬하는 연산 비용
+
+통계가 부정확하면 옵티마이저의 판단도 틀릴 수 있습니다. [인덱스가 안 타는 이유](/posts/10-why-indexes-are-not-used)에서 다뤘듯이, `ANALYZE TABLE`로 통계를 갱신하면 실행 계획이 바뀌는 경우가 종종 있습니다.
+
+> **참고:** MySQL에서 옵티마이저가 계산한 비용을 직접 확인하려면 `EXPLAIN FORMAT=JSON`을 사용합니다. 결과에 포함된 `query_cost` 필드가 옵티마이저가 추정한 총 비용입니다.
+
+## Phase 2. EXPLAIN 출력 컬럼 전체 해석
+
+`EXPLAIN`을 실행하면 다음과 같은 컬럼이 출력됩니다.
+
+```sql
+EXPLAIN
+SELECT o.id, o.status, u.name
+FROM orders o
+JOIN users u ON o.user_id = u.id
+WHERE o.status = 'PAID'
+  AND u.grade = 'VIP';
+```
+
+```
++----+-------------+-------+------+---------------+---------+---------+-----------+------+-------------+
+| id | select_type | table | type | possible_keys | key     | key_len | ref       | rows | Extra       |
++----+-------------+-------+------+---------------+---------+---------+-----------+------+-------------+
+|  1 | SIMPLE      | o     | ref  | idx_status    | idx_status | 62   | const     | 1200 | Using where |
+|  1 | SIMPLE      | u     | eq_ref | PRIMARY     | PRIMARY | 8      | db.o.user_id | 1  | Using where |
++----+-------------+-------+------+---------------+---------+---------+-----------+------+-------------+
+```
+
+각 컬럼의 의미를 하나씩 살펴보겠습니다.
+
+### `id` — 쿼리 블록 번호
+
+같은 `id`를 가진 행은 **하나의 조인 블록** 안에서 실행됩니다. 위 예시처럼 `id`가 모두 1이면 한 번의 조인으로 처리된다는 뜻입니다.
+
+`id`가 다르면 별도의 쿼리 블록입니다. 전통적인 `EXPLAIN`에서는 서브쿼리나 파생 테이블에서 `id`가 큰 쪽이 먼저 처리되는 것처럼 보이는 경우가 많지만, **항상 실행 순서를 보장하는 값은 아닙니다.**
+
+```
+id=1: 외부 쿼리
+id=2: 서브쿼리 (먼저 실행)
+```
+
+### `select_type` — 쿼리 블록의 종류
+
+| select_type | 의미 |
+|-------------|------|
+| SIMPLE | 서브쿼리나 UNION 없는 단순 쿼리 |
+| PRIMARY | 가장 바깥쪽 SELECT |
+| SUBQUERY | WHERE 절의 스칼라 서브쿼리 |
+| DERIVED | FROM 절의 서브쿼리 (파생 테이블) |
+| UNION | UNION의 두 번째 이후 SELECT |
+| DEPENDENT SUBQUERY | 외부 쿼리에 의존하는 서브쿼리 (상관 서브쿼리) |
+
+`DEPENDENT SUBQUERY`는 외부 쿼리의 값에 따라 **반복 평가될 수 있는** 서브쿼리라는 뜻이므로 성능에 주의해야 합니다.
+
+### `table` — 접근 대상 테이블
+
+해당 행이 어떤 테이블을 읽는지 표시합니다. 별칭을 사용했다면 별칭이 표시됩니다. `<derived2>`처럼 보이면 `id=2`인 파생 테이블을 뜻합니다.
+
+### `type` — 접근 방식 (가장 중요한 컬럼)
+
+옵티마이저가 테이블에서 행을 어떻게 찾는지를 나타냅니다. 성능에 가장 큰 영향을 주는 컬럼입니다.
+
+| type | 의미 | 읽는 행 수 |
+|------|------|-----------|
+| `system` | 테이블에 행이 1개 (시스템 테이블) | 1 |
+| `const` | PK 또는 유니크 인덱스로 **정확히 1행** 조회 | 1 |
+| `eq_ref` | 조인에서 PK/유니크 인덱스로 **1행씩** 매칭 | 조인 대상 행당 1 |
+| `ref` | 비유니크 인덱스로 동등 비교 | 조건에 맞는 행 수 |
+| `range` | 인덱스 범위 스캔 (`BETWEEN`, `>`, `<`, `IN`) | 범위 안의 행 수 |
+| `index` | **인덱스 전체**를 처음부터 끝까지 스캔 | 인덱스 전체 |
+| `ALL` | **테이블 전체**를 처음부터 끝까지 스캔 | 테이블 전체 |
+
+위에서 아래로 갈수록 읽는 행 수가 많아지므로 일반적으로 성능이 나빠집니다. 단, `range`까지는 대부분 수용할 수 있는 수준이고, `index`와 `ALL`이 나타나면 개선을 검토해야 합니다.
+
+`ref`인데도 느리다면 `rows` 값을 확인합니다. 인덱스를 타더라도 매칭되는 행이 수만 건이면 여전히 느릴 수 있습니다.
+
+### `possible_keys` / `key` — 인덱스 후보와 실제 선택
+
+- `possible_keys` — 옵티마이저가 **사용을 고려한** 인덱스 목록
+- `key` — 그중 **실제로 선택한** 인덱스
+
+`possible_keys`에 인덱스가 있는데 `key`가 `NULL`이면, 옵티마이저가 "그 인덱스를 쓰는 것보다 풀 스캔이 싸다"고 판단한 것입니다.
+
+### `key_len` — 사용된 인덱스 길이
+
+복합 인덱스에서 **몇 번째 컬럼까지 실제로 사용됐는지** 파악하는 단서입니다.
+
+```sql
+-- utf8mb3 기준: (status VARCHAR(20), created_at DATETIME) 복합 인덱스
+-- status만 사용: key_len = 62  (20×3 + 2)
+-- status + created_at 사용: key_len = 67  (62 + 5)
+```
+
+`key_len`이 예상보다 짧으면 복합 인덱스의 뒤쪽 컬럼이 활용되지 않은 것입니다. 이전 글에서 다뤘던 "범위 조건 이후 컬럼은 활용이 약해진다"가 여기서 구체적으로 확인됩니다.
+
+> **참고:** `key_len`은 문자셋과 NULL 허용 여부에 따라 달라집니다. 위 숫자는 예시일 뿐입니다. 예를 들어 `VARCHAR(20)`이 `utf8mb4`이면 최대 바이트는 `20×4 + 2(길이 저장)` = 82이며, `NOT NULL`이 아니면 1바이트가 추가됩니다.
+
+### `ref` — 인덱스와 비교되는 값
+
+인덱스 컬럼과 무엇을 비교했는지 보여줍니다.
+
+- `const` — 상수 값과 비교 (`WHERE status = 'PAID'`)
+- `db.o.user_id` — 다른 테이블의 컬럼과 비교 (조인)
+- `NULL` — 인덱스를 사용하지 않았거나 범위 스캔
+
+### `rows` — 예상 조회 행 수
+
+옵티마이저가 **읽어야 한다고 추정한 행 수**입니다. 실제 값과 다를 수 있지만, 튜닝 전후를 비교하는 지표로 유용합니다.
+
+조인에서는 각 테이블의 `rows`를 보면 대략적인 탐색량을 짐작할 수 있지만, **단순히 모두 곱한 값이 정확한 총 비용은 아닙니다.** 실제로는 각 단계에서 조건으로 얼마나 걸러지는지(`filtered`)까지 함께 봐야 합니다. 위 예시처럼 `eq_ref` 조인에서는 `1200 × 1` 수준으로 이해해도 무리가 없지만, 복잡한 조인에서는 단순 곱셈만으로 판단하면 안 됩니다.
+
+### `Extra` — 추가 실행 정보
+
+`Extra` 컬럼은 옵티마이저가 어떤 **추가 작업**을 하는지 보여줍니다. 여기서 성능 문제의 단서를 찾는 경우가 많습니다.
+
+| Extra | 의미 | 주의도 |
+|-------|------|--------|
+| `Using index` | 커버링 인덱스로 처리 (테이블 접근 없음) | 좋음 |
+| `Using where` | 스토리지 엔진에서 읽은 뒤 서버에서 추가 필터링 | 보통 |
+| `Using index condition` | 인덱스 컨디션 푸시다운 (ICP) 적용 | 보통~좋음 |
+| `Using temporary` | 중간 결과 저장을 위해 임시 테이블 생성 | 주의 |
+| `Using filesort` | 인덱스 순서로 해결되지 않아 별도 정렬 수행 | 주의 |
+| `Using join buffer` | 조인 시 버퍼를 사용한 배치 처리 (BNL/Hash Join) | 주의 |
+
+`Using filesort`는 이름과 달리 반드시 디스크를 사용하는 것은 아닙니다. 메모리에서 처리될 수도 있지만, **인덱스 정렬을 활용하지 못했다**는 점이 핵심입니다.
+
+`Using temporary` + `Using filesort`가 함께 나타나면 `GROUP BY`, `ORDER BY`, `DISTINCT` 처리 과정에서 임시 테이블을 만들고 다시 정렬하는 것이므로, 행 수가 많을 때 병목이 됩니다.
+
+## Phase 3. 조인 쿼리의 실행 계획 읽기
+
+### 조인 실행 순서
+
+MySQL에서 같은 `id`를 가진 행은 **위에서 아래로** 읽습니다. 위쪽 테이블이 **드라이빙 테이블(먼저 읽는 테이블)**, 아래쪽이 **드리븐 테이블(나중에 읽는 테이블)** 입니다.
+
+```
++----+-------+------+---------+------+
+| id | table | type | key     | rows |
++----+-------+------+---------+------+
+|  1 | o     | ref  | idx_status | 1200 |  ← 드라이빙: orders를 먼저 읽음
+|  1 | u     | eq_ref | PRIMARY |   1 |  ← 드리븐: 각 order에 대해 user를 PK로 조회
++----+-------+------+---------+------+
+```
+
+실행 흐름은 이렇습니다.
+
+```
+1. orders에서 status = 'PAID'인 행을 인덱스로 찾음 (약 1,200행)
+2. 찾은 각 행의 user_id로 users 테이블을 PK 조회 (행당 1회)
+3. 총 탐색량: 1,200 × 1 = 1,200
+```
+
+### 드라이빙 테이블 선택이 중요한 이유
+
+옵티마이저는 **결과 행이 적은 테이블을 드라이빙으로** 선택하는 경향이 있습니다. 드라이빙 테이블에서 나온 행 수만큼 드리븐 테이블을 반복 조회하기 때문입니다.
+
+```
+드라이빙 1,200행 × 드리븐 1행 = 1,200회 접근
+드라이빙 50,000행 × 드리븐 1행 = 50,000회 접근
+```
+
+같은 조인이라도 드라이빙 테이블이 바뀌면 성능이 크게 달라질 수 있습니다. `EXPLAIN`에서 첫 번째 테이블의 `rows`가 비정상적으로 크다면, 조건을 추가하거나 인덱스를 개선해서 드라이빙 테이블의 결과를 줄이는 것이 효과적입니다.
+
+### 3개 이상 테이블 조인
+
+```sql
+EXPLAIN
+SELECT o.id, u.name, p.product_name
+FROM orders o
+JOIN users u ON o.user_id = u.id
+JOIN products p ON o.product_id = p.id
+WHERE o.status = 'PAID';
+```
+
+```
++----+-------+--------+---------+------+
+| id | table | type   | key     | rows |
++----+-------+--------+---------+------+
+|  1 | o     | ref    | idx_status | 1200 |
+|  1 | u     | eq_ref | PRIMARY |    1 |
+|  1 | p     | eq_ref | PRIMARY |    1 |
++----+-------+--------+---------+------+
+```
+
+위에서 아래로 읽으면 됩니다. `orders` → `users` → `products` 순서로 접근하며, 총 탐색량은 `1,200 × 1 × 1 = 1,200`입니다. 드리븐 테이블이 모두 `eq_ref`이므로 조인 효율이 좋은 상태입니다.
+
+만약 드리븐 테이블 중 하나가 `ALL`이라면 그 테이블에 적절한 인덱스가 없다는 뜻이므로, `1,200 × 전체 행 수`만큼 탐색이 발생할 수 있습니다.
+
+## Phase 4. 서브쿼리와 파생 테이블의 실행 계획
+
+### 스칼라 서브쿼리
+
+```sql
+EXPLAIN
+SELECT o.id,
+       (SELECT u.name FROM users u WHERE u.id = o.user_id) AS user_name
+FROM orders o
+WHERE o.status = 'PAID';
+```
+
+```
++----+--------------------+-------+--------+---------+------+
+| id | select_type        | table | type   | key     | rows |
++----+--------------------+-------+--------+---------+------+
+|  1 | PRIMARY            | o     | ref    | idx_status | 1200 |
+|  2 | DEPENDENT SUBQUERY | u     | eq_ref | PRIMARY |    1 |
++----+--------------------+-------+--------+---------+------+
+```
+
+`DEPENDENT SUBQUERY`는 외부 쿼리(`orders`)의 값에 따라 서브쿼리가 **반복 평가될 수 있다**는 의미입니다. 이 예시에서는 외부 행 수가 많아질수록 서브쿼리 평가 횟수도 함께 늘어날 가능성이 큽니다.
+
+이 예시에서는 PK 조회(`eq_ref`)라 외부 행 수가 어느 정도 많아도 버틸 수 있지만, 서브쿼리 안에서 풀 스캔이 발생하면 외부 결과 수에 비례해 비용이 급격히 커질 수 있습니다.
+
+### FROM 절 서브쿼리 (파생 테이블)
+
+```sql
+EXPLAIN
+SELECT d.status, d.cnt
+FROM (
+  SELECT status, COUNT(*) AS cnt
+  FROM orders
+  GROUP BY status
+) d
+WHERE d.cnt > 100;
+```
+
+```
++----+-------------+------------+-------+---------+------+----------------+
+| id | select_type | table      | type  | key     | rows | Extra          |
++----+-------------+------------+-------+---------+------+----------------+
+|  1 | PRIMARY     | <derived2> | ALL   | NULL    |    5 | Using where    |
+|  2 | DERIVED     | orders     | index | idx_status | 50000 | Using index |
++----+-------------+------------+-------+---------+------+----------------+
+```
+
+이 예시에서는 `id=2`의 파생 테이블이 먼저 계산된 뒤, 그 결과를 `id=1`에서 `<derived2>`로 읽는 형태로 해석할 수 있습니다. 즉 `orders` 테이블을 인덱스 전체 스캔하여 `GROUP BY`를 처리하고, 그 결과가 임시 테이블로 만들어진 다음 바깥 쿼리에서 사용됩니다.
+
+파생 테이블은 **실체화(Materialization)** 되어 임시 테이블에 저장되므로, 결과가 클 경우 메모리나 디스크를 사용합니다. MySQL 8.0에서는 옵티마이저가 파생 테이블을 외부 쿼리에 **머지(Merge)** 하여 임시 테이블 생성을 피하기도 합니다.
+
+> **참고:** `EXPLAIN`에서 `select_type`이 `DERIVED`인데 실제로는 머지되어 사라지는 경우, MySQL 8.0에서는 해당 행 자체가 출력되지 않을 수 있습니다. 실행 계획에 파생 테이블이 보이지 않는다면 머지가 적용된 것입니다.
+
+## Phase 5. EXPLAIN ANALYZE — 예상과 실제의 차이 확인
+
+### EXPLAIN은 예상, EXPLAIN ANALYZE는 실측
+
+`EXPLAIN`의 `rows`는 **추정치**입니다. 통계 기반이므로 실제와 차이가 날 수 있습니다. `EXPLAIN ANALYZE`는 **쿼리를 실제로 실행**하고 각 단계의 실측 데이터를 보여줍니다.
+
+```sql
+-- MySQL 8.0.18+
+EXPLAIN ANALYZE
+SELECT o.id, u.name
+FROM orders o
+JOIN users u ON o.user_id = u.id
+WHERE o.status = 'PAID';
+```
+
+```
+-> Nested loop inner join  (cost=2145 rows=1200)
+     (actual time=0.15..8.32 rows=1180 loops=1)
+    -> Index lookup on o using idx_status (status='PAID')
+         (cost=540 rows=1200)
+         (actual time=0.08..2.15 rows=1180 loops=1)
+    -> Single-row index lookup on u using PRIMARY (id=o.user_id)
+         (cost=1.00 rows=1)
+         (actual time=0.004..0.004 rows=1 loops=1180)
+```
+
+### 출력 읽는 법
+
+각 노드에 두 줄이 있습니다.
+
+- **첫 줄 (cost, rows)** — 옵티마이저의 **예상** 비용과 행 수
+- **둘째 줄 (actual time, rows, loops)** — **실제** 실행 시간, 반환 행 수, 반복 횟수
+
+핵심 지표는 세 가지입니다.
+
+| 지표 | 의미 | 확인 포인트 |
+|------|------|------------|
+| `actual time=A..B` | 첫 행 반환까지 A ms, 마지막 행까지 B ms | B가 크면 해당 단계가 병목 |
+| `rows` (actual) | 실제 반환된 행 수 | 예상 `rows`와 크게 다르면 통계 부정확 |
+| `loops` | 해당 단계가 반복 실행된 횟수 | `loops`가 크면 총 비용 = time × loops |
+
+위 예시에서 `rows=1200`(예상)과 `rows=1180`(실제)이 비슷하므로 통계가 정확한 상태입니다. 만약 예상은 100인데 실제가 50,000이라면 통계 갱신이 필요합니다.
+
+> **참고:** `EXPLAIN ANALYZE`는 쿼리를 **실제로 실행**합니다. 따라서 지원되는 문장에 대해 실행 부하가 실제로 발생합니다. 운영 환경에서는 `SELECT`라도 주의해서 사용해야 하며, 데이터 변경 문장에 적용할 때는 현재 MySQL 버전에서 어떤 문장을 지원하는지 먼저 확인하는 것이 안전합니다.
+
+## Phase 6. EXPLAIN FORMAT=JSON — 비용 상세 확인
+
+`FORMAT=JSON`은 옵티마이저가 계산한 비용을 구조적으로 보여줍니다.
+
+```sql
+EXPLAIN FORMAT=JSON
+SELECT * FROM orders WHERE status = 'PAID';
+```
+
+```json
+{
+  "query_block": {
+    "select_id": 1,
+    "cost_info": {
+      "query_cost": "540.00"
+    },
+    "table": {
+      "table_name": "orders",
+      "access_type": "ref",
+      "key": "idx_status",
+      "rows_examined_per_scan": 1200,
+      "rows_produced_per_join": 1200,
+      "cost_info": {
+        "read_cost": "300.00",
+        "eval_cost": "240.00",
+        "prefix_cost": "540.00"
+      }
+    }
+  }
+}
+```
+
+### 비용 구조
+
+- `read_cost` — 데이터를 읽는 I/O 비용
+- `eval_cost` — 읽은 행을 평가(필터링, 비교)하는 CPU 비용
+- `prefix_cost` — 이 단계까지의 **누적** 비용
+- `query_cost` — 전체 쿼리의 총 비용
+
+이 값들을 직접 튜닝에 활용하기보다는, **두 실행 계획의 비용을 비교**하는 용도로 사용합니다. 인덱스를 추가하거나 쿼리를 변경한 뒤 `query_cost`가 줄어들었는지 확인하면 개선 효과를 정량적으로 파악할 수 있습니다.
+
+## Phase 7. PostgreSQL EXPLAIN과의 차이
+
+PostgreSQL의 `EXPLAIN`은 출력 형식과 용어가 다르지만, 핵심 개념은 같습니다.
+
+### 기본 출력 형식
+
+```sql
+EXPLAIN
+SELECT * FROM orders WHERE status = 'PAID';
+```
+
+```
+Seq Scan on orders  (cost=0.00..1250.00 rows=1200 width=85)
+  Filter: (status = 'PAID'::text)
+```
+
+PostgreSQL은 **트리 형태**로 출력합니다. 각 노드가 하나의 연산이며, 안쪽(들여쓰기가 깊은 쪽)부터 실행됩니다.
+
+### MySQL과 PostgreSQL의 EXPLAIN 비교
+
+| 항목 | MySQL | PostgreSQL |
+|------|-------|------------|
+| 기본 출력 | 테이블 형태 (행 단위) | 트리 형태 (노드 단위) |
+| 비용 표기 | `FORMAT=JSON`에서 확인 | 기본 출력에 `cost=시작..총` 포함 |
+| 실측 분석 | `EXPLAIN ANALYZE` (8.0.18+) | `EXPLAIN ANALYZE` |
+| 접근 방식 표기 | `type` 컬럼 (`ref`, `ALL` 등) | 노드 이름 (`Index Scan`, `Seq Scan` 등) |
+| 풀 스캔 | `ALL` | `Seq Scan` |
+| 인덱스 스캔 | `ref`, `range` 등 | `Index Scan`, `Index Only Scan` |
+| 조인 방식 | `Extra`에서 유추 | 노드로 명시 (`Nested Loop`, `Hash Join`, `Merge Join`) |
+
+PostgreSQL은 조인 방식을 노드 이름으로 직접 보여주므로, **어떤 조인 알고리즘이 사용됐는지**를 바로 확인할 수 있습니다.
+
+```
+Hash Join  (cost=35.00..1285.00 rows=1200 width=120)
+  Hash Cond: (o.user_id = u.id)
+  ->  Seq Scan on orders o  (cost=0.00..1250.00 rows=1200 width=85)
+        Filter: (status = 'PAID'::text)
+  ->  Hash  (cost=22.00..22.00 rows=500 width=35)
+        ->  Seq Scan on users u  (cost=0.00..22.00 rows=500 width=35)
+              Filter: (grade = 'VIP'::text)
+```
+
+안쪽부터 읽으면 됩니다. `users`를 먼저 스캔하여 해시 테이블을 만들고, `orders`를 스캔하면서 해시 테이블과 매칭합니다.
+
+## Phase 8. 실행 계획으로 문제 찾기 — 실전 패턴
+
+### 패턴 1: 인덱스를 탔는데 느린 경우
+
+```
+| type | key        | rows   | Extra       |
+| ref  | idx_status | 45000  | Using where |
+```
+
+`type`이 `ref`이므로 인덱스를 사용하고 있지만, `rows`가 45,000입니다. **인덱스를 타는 것과 빠른 것은 다릅니다.** 선택도가 낮은 조건으로 인덱스를 타면 대량의 행을 읽고도 추가 필터링이 필요합니다.
+
+**개선 방향:** 더 선택적인 조건을 포함한 복합 인덱스로 `rows`를 줄이거나, 커버링 인덱스를 검토합니다.
+
+### 패턴 2: Using filesort + Using temporary
+
+```
+| type | key     | rows | Extra                           |
+| ref  | idx_uid | 500  | Using where; Using temporary; Using filesort |
+```
+
+`GROUP BY`나 `ORDER BY`가 인덱스 순서와 맞지 않아 임시 테이블과 별도 정렬이 발생한 상태입니다.
+
+**개선 방향:** `WHERE` 조건과 `ORDER BY`/`GROUP BY`를 함께 처리할 수 있는 복합 인덱스를 설계합니다. 예를 들어 `WHERE user_id = ? ORDER BY created_at`이라면 `(user_id, created_at)` 인덱스가 두 가지를 한 번에 해결합니다.
+
+### 패턴 3: 조인 드리븐 테이블이 ALL
+
+```
+| id | table | type   | key     | rows  |
+|  1 | o     | ref    | idx_status | 1200 |
+|  1 | d     | ALL    | NULL    | 80000 |
+```
+
+드라이빙 테이블은 인덱스를 타지만, 드리븐 테이블 `d`가 풀 스캔입니다. 총 탐색량은 `1,200 × 80,000 = 9,600만`에 달할 수 있습니다.
+
+**개선 방향:** 드리븐 테이블의 조인 키에 인덱스를 추가합니다. `eq_ref`나 `ref`로 바뀌면 `1,200 × 1` 수준으로 줄어듭니다.
+
+### 패턴 4: 예상 rows와 실제 rows의 큰 차이
+
+```
+-- EXPLAIN:        rows=100
+-- EXPLAIN ANALYZE: actual rows=25000
+```
+
+통계가 실제 데이터 분포를 반영하지 못하고 있습니다. 옵티마이저가 "100행 정도니까 이 계획이 싸다"고 판단했지만 실제로는 25,000행을 처리해야 합니다.
+
+**개선 방향:** `ANALYZE TABLE`로 통계를 갱신하고 실행 계획을 다시 확인합니다. MySQL 8.0의 히스토그램(`ANALYZE TABLE ... UPDATE HISTOGRAM`)을 활용하면 데이터 분포가 편향된 컬럼의 통계를 개선할 수 있습니다.
+
+## 한눈에 보는 EXPLAIN 점검 순서
+
+실행 계획을 볼 때 아래 순서로 확인하면 문제를 빠르게 좁힐 수 있습니다.
+
+| 순서 | 확인 항목 | 무엇을 보는가 |
+|:----:|----------|--------------|
+| 1 | `type` | `ALL`이나 `index`가 있는가 |
+| 2 | `rows` | 예상 행 수가 비정상적으로 큰가 |
+| 3 | `key` | 의도한 인덱스가 실제로 선택됐는가 |
+| 4 | `key_len` | 복합 인덱스의 컬럼이 충분히 사용됐는가 |
+| 5 | `Extra` | `Using filesort`, `Using temporary`가 있는가 |
+| 6 | 조인 순서 | 드라이빙 테이블의 `rows`가 적절한가 |
+| 7 | `EXPLAIN ANALYZE` | 예상과 실제가 크게 다른 단계가 있는가 |
+
+## 정리
+
+1. **옵티마이저는 비용 기반으로 판단합니다** — 인덱스가 있어도 비용이 높다고 추정하면 사용하지 않습니다
+2. **`type`이 가장 중요한 컬럼입니다** — `ALL`과 `index`는 개선 신호이고, `ref`라도 `rows`가 크면 주의해야 합니다
+3. **`key_len`으로 복합 인덱스 활용도를 확인합니다** — 길이가 짧으면 뒤쪽 컬럼이 사용되지 않은 것입니다
+4. **`Extra`에서 `Using filesort`와 `Using temporary`는 개선 후보입니다** — `WHERE`와 `ORDER BY`를 함께 처리하는 인덱스가 해결책인 경우가 많습니다
+5. **조인은 드라이빙 테이블의 행 수가 성능을 결정합니다** — 첫 번째 테이블의 `rows`를 줄이는 것이 가장 효과적입니다
+6. **`EXPLAIN ANALYZE`로 예상과 실제를 비교합니다** — 차이가 크면 통계 갱신이 필요합니다
