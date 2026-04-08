@@ -14,6 +14,7 @@ export default function Search({ posts }: { posts: SearchPost[] }) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const results = query.trim()
     ? posts.filter(
@@ -51,6 +52,21 @@ export default function Search({ posts }: { posts: SearchPost[] }) {
     return () => { document.body.style.overflow = ""; };
   }, [open]);
 
+  useEffect(() => {
+    if (!open) return;
+    function handleOutside(e: MouseEvent | TouchEvent) {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        close();
+      }
+    }
+    document.addEventListener("mousedown", handleOutside);
+    document.addEventListener("touchstart", handleOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleOutside);
+      document.removeEventListener("touchstart", handleOutside);
+    };
+  }, [open, close]);
+
   if (!open) {
     return (
       <button
@@ -77,17 +93,11 @@ export default function Search({ posts }: { posts: SearchPost[] }) {
         </svg>
       </button>
 
-      {/* 오버레이 */}
-      <div
-        className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm animate-[fadeIn_150ms_ease-out]"
-        onClick={close}
-      />
-
       {/* 모달 */}
       <div className="fixed inset-0 z-50 flex items-start justify-center pt-[min(20vh,160px)] px-4 pointer-events-none">
         <div
+          ref={modalRef}
           className="w-full max-w-xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden pointer-events-auto animate-[slideDown_200ms_ease-out]"
-          onClick={(e) => e.stopPropagation()}
         >
           {/* 검색 입력 */}
           <div className="flex items-center gap-3 px-5 py-4">
@@ -112,6 +122,15 @@ export default function Search({ posts }: { posts: SearchPost[] }) {
                 </svg>
               </button>
             )}
+            <button
+              onClick={close}
+              className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 dark:text-gray-500 shrink-0"
+              aria-label="검색 닫기"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
 
           {/* 구분선 */}
@@ -124,7 +143,7 @@ export default function Search({ posts }: { posts: SearchPost[] }) {
                 <p className="text-sm text-gray-400 dark:text-gray-500">
                   제목, 내용, 태그로 검색할 수 있어요
                 </p>
-                <p className="text-xs text-gray-300 dark:text-gray-600 mt-2">
+                <p className="hidden sm:block text-xs text-gray-300 dark:text-gray-600 mt-2">
                   <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-gray-400 dark:text-gray-500 border border-gray-200 dark:border-gray-700">ESC</kbd> 로 닫기
                 </p>
               </div>
