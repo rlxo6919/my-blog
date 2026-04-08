@@ -54,16 +54,27 @@ export default function Search({ posts }: { posts: SearchPost[] }) {
 
   useEffect(() => {
     if (!open) return;
-    function handleOutside(e: MouseEvent | TouchEvent) {
+    function handleOutside(e: Event) {
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        e.preventDefault();
+        e.stopPropagation();
+        // close 후 리렌더로 리스너가 제거되므로, 뒤따르는 click/touchend를 한 번 더 차단
+        function blockOnce(ev: Event) {
+          ev.preventDefault();
+          ev.stopPropagation();
+          document.removeEventListener("click", blockOnce, true);
+          document.removeEventListener("touchend", blockOnce, true);
+        }
+        document.addEventListener("click", blockOnce, true);
+        document.addEventListener("touchend", blockOnce, true);
         close();
       }
     }
-    document.addEventListener("mousedown", handleOutside);
-    document.addEventListener("touchstart", handleOutside);
+    document.addEventListener("mousedown", handleOutside, true);
+    document.addEventListener("touchstart", handleOutside, true);
     return () => {
-      document.removeEventListener("mousedown", handleOutside);
-      document.removeEventListener("touchstart", handleOutside);
+      document.removeEventListener("mousedown", handleOutside, true);
+      document.removeEventListener("touchstart", handleOutside, true);
     };
   }, [open, close]);
 

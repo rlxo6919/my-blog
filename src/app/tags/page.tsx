@@ -24,12 +24,12 @@ export const metadata: Metadata = {
 };
 
 const TAG_COLORS = [
-  "from-blue-500 to-cyan-500",
-  "from-purple-500 to-pink-500",
-  "from-orange-500 to-red-500",
-  "from-green-500 to-emerald-500",
-  "from-indigo-500 to-violet-500",
-  "from-amber-500 to-yellow-500",
+  { gradient: "from-blue-500 to-cyan-500", text: "group-hover:text-blue-500" },
+  { gradient: "from-purple-500 to-pink-500", text: "group-hover:text-purple-500" },
+  { gradient: "from-orange-500 to-red-500", text: "group-hover:text-orange-500" },
+  { gradient: "from-green-500 to-emerald-500", text: "group-hover:text-green-500" },
+  { gradient: "from-indigo-500 to-violet-500", text: "group-hover:text-indigo-500" },
+  { gradient: "from-amber-500 to-yellow-500", text: "group-hover:text-amber-500" },
 ];
 
 export default function TagsPage() {
@@ -44,16 +44,16 @@ export default function TagsPage() {
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         {tags.map((tag, i) => {
           const count = getPostsByTag(tag).length;
-          const gradient = TAG_COLORS[i % TAG_COLORS.length];
+          const color = TAG_COLORS[i % TAG_COLORS.length];
           return (
             <Link
               key={tag}
               href={`/tags/${tag}`}
               className="group relative p-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-transparent bg-white dark:bg-gray-900/50 hover:shadow-lg transition-all duration-300 overflow-hidden"
             >
-              <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-5 dark:group-hover:opacity-10 transition-opacity`} />
+              <div className={`absolute inset-0 bg-gradient-to-br ${color.gradient} opacity-0 group-hover:opacity-5 dark:group-hover:opacity-10 transition-opacity`} />
               <div className="relative">
-                <span className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:${gradient}">
+                <span className={`text-lg font-semibold text-gray-900 dark:text-gray-100 ${color.text} transition-colors`}>
                   #{tag}
                 </span>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">

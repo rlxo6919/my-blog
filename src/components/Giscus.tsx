@@ -1,9 +1,13 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 
 export default function Giscus() {
   const ref = useRef<HTMLDivElement>(null);
+
+  const getTheme = useCallback(() => {
+    return document.documentElement.classList.contains("dark") ? "dark" : "light";
+  }, []);
 
   useEffect(() => {
     if (!ref.current || ref.current.hasChildNodes()) return;
@@ -20,15 +24,31 @@ export default function Giscus() {
     script.setAttribute("data-emit-metadata", "0");
     script.setAttribute("data-input-position", "bottom");
     script.setAttribute("data-lang", "ko");
+    script.setAttribute("data-theme", getTheme());
     script.setAttribute("crossorigin", "anonymous");
     script.async = true;
 
-    // 테마 감지
-    const dark = document.documentElement.classList.contains("dark");
-    script.setAttribute("data-theme", dark ? "dark" : "light");
-
     ref.current.appendChild(script);
-  }, []);
+  }, [getTheme]);
+
+  // 테마 변경 감지 → Giscus iframe에 메시지 전송
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const iframe = ref.current?.querySelector<HTMLIFrameElement>("iframe.giscus-frame");
+      if (!iframe?.contentWindow) return;
+      iframe.contentWindow.postMessage(
+        { giscus: { setConfig: { theme: getTheme() } } },
+        "https://giscus.app"
+      );
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, [getTheme]);
 
   return <div ref={ref} className="mt-10 pt-6 border-t border-gray-200 dark:border-gray-700" />;
 }
