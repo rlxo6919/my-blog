@@ -97,41 +97,11 @@ fun toListItem(view: ChatRoomDetailData): ChatRoomListItem =
 
 > Protobuf는 기본값인 `0`, `""`, `false`를 와이어 포맷에서 생략할 수 있으므로, 아예 세팅하지 않는 것 자체가 응답 크기 감소로 이어집니다.
 
----
-
-## Phase 2. 요약 API인데 값이 비어 있던 필드를 바로잡았다
-
-### 문제: 필요한 필드도 제대로 안 내려가고 있었다
-
-요약 API를 쓰는 클라이언트가 실제로 필요로 하던 값 중 일부는 비어 있거나 기본값으로 내려가고 있었습니다.
-
-- `orderSummary.buyerId`가 빈 문자열
-- `orderSummary.status`가 기본값
-- `item.status`가 기본값
-
-이 상태에서는 클라이언트가 목록 화면에서 거래 상태를 정확히 분기할 수 없었습니다.
-
-### 해결: View와 Assembler에 누락 필드 추가
-
-`OrderSummary`, `ItemSummary`에 `status`를 포함시키고, 요약 변환 로직에서도 실제 값을 채우도록 수정했습니다.
-
-```kotlin
-data class OrderSummary(
-    val buyerId: String?,
-    val status: OrderStatus?,
-)
-
-data class ItemSummary(
-    val status: ItemStatus?,
-    val image: ItemImageSummary?,
-)
-```
-
-이렇게 정리하니 요약 API는 "필드는 적지만, 필요한 값은 정확히 있는" 상태가 됐습니다. 경량화는 단순히 필드를 삭제하는 것이 아니라, **필요한 정보만 정확하게 남기는 작업**이어야 합니다.
+다만 요약 API라고 해서 무조건 필드를 줄이기만 하면 안 됩니다. 실제로 목록 화면에서 분기에 쓰는 `orderSummary.buyerId`, `orderSummary.status`, `item.status` 같은 값은 비어 있지 않게 함께 정리해야 합니다. 경량화는 단순히 필드를 삭제하는 것이 아니라, **필요한 정보만 정확하게 남기는 작업**이어야 합니다.
 
 ---
 
-## Phase 3. 필요 없는 외부 조회를 끊었다
+## Phase 2. 필요 없는 외부 조회를 끊었다
 
 ### 문제: 응답에서 안 쓰는데 조회는 계속 하고 있었다
 
@@ -169,7 +139,7 @@ if (!isSummaryRequest) {
 
 ---
 
-## Phase 4. N+1 쿼리를 IN 쿼리로 바꿨다
+## Phase 3. N+1 쿼리를 IN 쿼리로 바꿨다
 
 ### 문제: 채팅방 25개면 같은 쿼리가 25번 반복됐다
 
