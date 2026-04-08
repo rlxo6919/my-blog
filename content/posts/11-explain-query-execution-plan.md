@@ -2,7 +2,7 @@
 title: "실행 계획 완전 정복 — EXPLAIN으로 쿼리 옵티마이저의 선택을 읽는 법"
 date: "2026-04-08"
 category: "study"
-tags: ["Database", "SQL", "EXPLAIN", "MySQL"]
+tags: ["실행 계획", "쿼리 최적화"]
 excerpt: "EXPLAIN 출력의 각 컬럼이 무엇을 뜻하는지, 옵티마이저가 왜 그 계획을 골랐는지, 조인과 서브쿼리는 어떻게 읽는지 예제와 함께 정리합니다."
 ---
 

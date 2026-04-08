@@ -2,7 +2,7 @@
 title: "Kotlin에서 Redis 캐시가 깨지는 이유 — Jackson DefaultTyping의 함정"
 date: "2026-04-06"
 category: "troubleshooting"
-tags: ["Redis", "Kotlin", "Spring Boot", "Jackson"]
+tags: ["캐시"]
 excerpt: "LinkedHashMap 역직렬화 문제와 START_OBJECT vs START_ARRAY 에러를 Jackson DefaultTyping 관점에서 정리합니다."
 ---
 

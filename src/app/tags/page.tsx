@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getAllTags, getPostsByTag } from "@/lib/posts";
+import { getAllTagsWithCount } from "@/lib/posts";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -33,7 +33,7 @@ const TAG_COLORS = [
 ];
 
 export default function TagsPage() {
-  const tags = getAllTags();
+  const tags = getAllTagsWithCount();
 
   return (
     <div>
@@ -42,8 +42,7 @@ export default function TagsPage() {
         <p className="text-gray-500 dark:text-gray-400">주제별로 글을 찾아보세요</p>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-        {tags.map((tag, i) => {
-          const count = getPostsByTag(tag).length;
+        {tags.map(({ tag, count }, i) => {
           const color = TAG_COLORS[i % TAG_COLORS.length];
           return (
             <Link

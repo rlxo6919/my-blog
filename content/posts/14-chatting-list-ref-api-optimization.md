@@ -2,7 +2,7 @@
 title: "채팅방 목록 요약 API 성능 개선기 - 응답 경량화와 N+1 제거"
 date: "2026-04-08"
 category: "troubleshooting"
-tags: ["Kotlin", "JPA", "Protobuf", "Spring Boot"]
+tags: ["N+1", "쿼리 최적화"]
 excerpt: "채팅 목록 전용 요약 API가 이름만 가벼웠던 이유를 추적하고, 응답 필드 최적화와 배치 조회로 DB 쿼리를 약 80% 줄인 과정을 정리합니다."
 ---
 

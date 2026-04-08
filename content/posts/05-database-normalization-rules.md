@@ -2,7 +2,7 @@
 title: "데이터베이스 정규화 완전 정복 — 1NF부터 BCNF까지"
 date: "2026-04-06"
 category: "study"
-tags: ["Database", "SQL", "정규화"]
+tags: ["정규화"]
 excerpt: "정규화가 왜 필요한지, 각 단계가 어떤 이상 현상을 해결하는지 예제 테이블과 함께 정리합니다."
 ---
 

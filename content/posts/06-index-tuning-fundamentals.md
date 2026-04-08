@@ -2,7 +2,7 @@
 title: "인덱스 완전 정복 — B+Tree 구조부터 실행 계획 읽기까지"
 date: "2026-04-06"
 category: "study"
-tags: ["Database", "SQL", "Index", "MySQL"]
+tags: ["인덱스", "실행 계획"]
 excerpt: "인덱스가 왜 빠른지, 복합 인덱스 컬럼 순서가 왜 중요한지, EXPLAIN은 어떻게 읽는지 예제와 함께 정리합니다."
 ---
 

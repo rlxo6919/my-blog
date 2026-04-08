@@ -22,6 +22,11 @@ export interface Post {
   readingTime: number;
 }
 
+export interface TagSummary {
+  tag: string;
+  count: number;
+}
+
 function estimateReadingTime(text: string): number {
   // 코드 블록 제거 (읽기 시간에서 코드는 별도 가중치)
   const codeBlocks = (text.match(/```[\s\S]*?```/g) || []);
@@ -116,10 +121,21 @@ export async function markdownToHtml(markdown: string): Promise<string> {
 }
 
 export function getAllTags(): string[] {
-  const posts = getAllPosts();
-  const tagSet = new Set<string>();
-  posts.forEach((post) => post.tags.forEach((tag) => tagSet.add(tag)));
-  return Array.from(tagSet).sort();
+  return getAllTagsWithCount().map(({ tag }) => tag);
+}
+
+export function getAllTagsWithCount(): TagSummary[] {
+  const tagCount = new Map<string, number>();
+
+  getAllPosts().forEach((post) => {
+    post.tags.forEach((tag) => {
+      tagCount.set(tag, (tagCount.get(tag) ?? 0) + 1);
+    });
+  });
+
+  return Array.from(tagCount.entries())
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "ko"))
+    .map(([tag, count]) => ({ tag, count }));
 }
 
 export function getPostsByTag(tag: string): Post[] {

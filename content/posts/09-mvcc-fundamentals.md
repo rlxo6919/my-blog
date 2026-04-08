@@ -2,7 +2,7 @@
 title: "MVCC 완전 정복 — Undo 로그부터 스냅샷 읽기까지"
 date: "2026-04-07"
 category: "study"
-tags: ["Database", "SQL", "MVCC", "MySQL"]
+tags: ["동시성 제어"]
 excerpt: "MVCC가 왜 필요한지, Undo 로그와 스냅샷 읽기가 어떻게 동작하는지 정리합니다."
 ---
 

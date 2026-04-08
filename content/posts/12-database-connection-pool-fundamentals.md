@@ -2,7 +2,7 @@
 title: "DB 커넥션 풀 완전 정복 — HikariCP 설정부터 풀 고갈 원인까지"
 date: "2026-04-08"
 category: "study"
-tags: ["Database", "Connection Pool", "JDBC", "HikariCP", "MySQL"]
+tags: ["커넥션 풀"]
 excerpt: "DB 커넥션 풀이 왜 필요한지, max pool size를 어떻게 봐야 하는지, 풀 고갈이 왜 발생하는지, HikariCP 핵심 옵션과 실무 점검 포인트를 정리합니다."
 ---
 

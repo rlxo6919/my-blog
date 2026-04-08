@@ -2,7 +2,7 @@
 title: "SELECT ... FOR UPDATE는 언제 써야 할까 — 비관적 락이 필요한 순간"
 date: "2026-04-08"
 category: "study"
-tags: ["Database", "SQL", "Lock", "Transaction", "MySQL"]
+tags: ["동시성 제어", "트랜잭션", "락"]
 excerpt: "SELECT ... FOR UPDATE가 정확히 무엇을 잠그는지, 어떤 상황에서 필요하고 어떤 상황에서는 과한지, 인덱스와 트랜잭션 범위까지 실무 기준으로 정리합니다."
 ---
 

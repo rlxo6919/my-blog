@@ -2,7 +2,7 @@
 title: "채팅 모듈 조회 성능 개선기 — 배치 페칭과 레이어 정리"
 date: "2026-04-06"
 category: "troubleshooting"
-tags: ["Kotlin", "JPA", "QueryDSL", "Spring Boot"]
+tags: ["쿼리 최적화"]
 excerpt: "`innerJoin`으로 인한 누락, 불필요한 Redis 캐싱, 중복 모델 문제를 쿼리 최적화와 레이어 정리로 해결한 과정을 공유합니다."
 ---
 

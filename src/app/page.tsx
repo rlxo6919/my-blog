@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { getAllPosts, getAllTags, getPostsByTag } from "@/lib/posts";
+import { getAllPosts, getAllTagsWithCount } from "@/lib/posts";
 import PostList from "@/components/PostList";
 
 export default function Home() {
   const posts = getAllPosts();
-  const tags = getAllTags();
+  const tags = getAllTagsWithCount();
 
   return (
     <div>
@@ -41,8 +41,7 @@ export default function Home() {
       {tags.length > 0 && (
         <section className="mb-10">
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {tags.map((tag) => {
-              const count = getPostsByTag(tag).length;
+            {tags.map(({ tag, count }) => {
               return (
                 <Link
                   key={tag}
