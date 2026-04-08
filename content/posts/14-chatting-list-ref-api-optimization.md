@@ -91,7 +91,7 @@ fun toListItem(view: ChatRoomDetailData): ChatRoomListItem =
 |-------------|------|
 | 내부 식별자, 타깃 참조값, 실시간 동기화 소스 ID | 목록 화면에서 미사용 |
 | `lastSentChat.idx`, `senderId`, `jsonContent` 등 | 미리보기에는 불필요 |
-| `item.id`, `item.name`, `item.designer` | 목록에서는 상태와 썸네일만 필요 |
+| `item.id`, `item.name`, `item.brand` | 목록에서는 상태와 썸네일만 필요 |
 | `orderSummary.id`, `orderSummary.itemId` | `buyerId`, `status`만 필요 |
 | 부가 안내 정보, 송신 여부 플래그 | 목록 화면에서 사용하지 않음 |
 
