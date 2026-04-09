@@ -90,9 +90,9 @@ SELECT * FROM users WHERE age BETWEEN 15 AND 25 FOR UPDATE;
                         ↑ INSERT age=22 대기
 ```
 
-갭 락은 **Phantom Read를 방지하기 위한 메커니즘**입니다. MySQL InnoDB의 Repeatable Read에서 사용됩니다.
+갭 락은 **Phantom Read를 방지하기 위한 메커니즘**입니다. MySQL InnoDB의 Repeatable Read에서 범위 검색과 스캔에 주로 사용됩니다.
 
-> **참고:** 갭 락은 `INSERT`만 차단합니다. 갭 범위 내의 기존 행에 대한 `SELECT`나 `UPDATE`는 갭 락이 아닌 레코드 락의 영향을 받습니다.
+> **참고:** 갭 락은 `INSERT`만 차단합니다. 갭 범위 내의 기존 행에 대한 `SELECT`나 `UPDATE`는 갭 락이 아닌 레코드 락의 영향을 받습니다. Read Committed에서는 검색/스캔에 대한 갭 락이 대부분 비활성화되고, 외래 키 검사나 중복 키 검사에는 남을 수 있습니다.
 
 ### 넥스트 키 락 (Next-Key Lock, InnoDB)
 
@@ -253,7 +253,7 @@ WHERE id = 2;  → 대기 (B가 행 2 보유)
 ### DB 엔진의 데드락 처리
 
 **MySQL InnoDB:**
-- **대기 그래프(Wait-for Graph)** 를 주기적으로 검사하여 순환이 감지되면, Undo 로그 양이 가장 적은(롤백 비용이 가장 낮은) 트랜잭션을 선택하여 롤백합니다
+- **대기 그래프(Wait-for Graph)** 에서 순환 대기가 감지되면, Undo 로그 양이 가장 적은(롤백 비용이 가장 낮은) 트랜잭션을 선택하여 롤백합니다
 - 롤백된 트랜잭션은 `ERROR 1213 (40001): Deadlock found when trying to get lock` 에러를 받습니다
 - `SHOW ENGINE INNODB STATUS`로 마지막 데드락 정보를 확인할 수 있습니다
 

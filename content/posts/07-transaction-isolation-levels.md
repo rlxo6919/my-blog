@@ -165,7 +165,7 @@ COMMIT;
 
 트랜잭션 A는 첫 번째 SELECT 시점의 스냅샷을 계속 읽으므로, B가 중간에 값을 바꾸고 커밋해도 A에게는 보이지 않습니다.
 
-> **참고:** MySQL InnoDB의 Repeatable Read는 SQL 표준보다 강력합니다. **일관된 읽기(Consistent Read)** 는 MVCC 스냅샷으로, **잠금 읽기(`SELECT ... FOR UPDATE`)와 쓰기**는 갭 락과 넥스트 키 락으로 Phantom을 방지합니다. 다만 완벽하지는 않아서, 특정 순서의 `SELECT` → `UPDATE` → `SELECT` 조합에서 팬텀이 발생할 수 있습니다.
+> **참고:** MySQL InnoDB의 Repeatable Read는 SQL 표준보다 강력합니다. **일관된 읽기(Consistent Read)** 는 MVCC 스냅샷으로, **잠금 읽기(`SELECT ... FOR UPDATE`)와 쓰기**는 갭 락과 넥스트 키 락으로 Phantom을 줄입니다. 다만 일관된 읽기와 잠금 읽기/쓰기를 한 트랜잭션 안에서 섞으면, 고전적인 Phantom Read와는 조금 다른 형태의 일관성 혼란이 생길 수 있습니다.
 
 ### Serializable — 완전한 격리
 
@@ -343,7 +343,7 @@ WHERE id = 2;  → 대기 (B가 행 2 보유)
 | Repeatable Read   | 방지       | 방지                 | 발생 가능*    | 보통    |
 | Serializable      | 방지       | 방지                 | 방지          | 느림    |
 
-\* MySQL InnoDB에서는 MVCC + 갭 락으로 대부분의 Phantom Read도 방지됩니다.
+\* MySQL InnoDB는 일관된 읽기와 잠금 읽기/쓰기를 다르게 처리하므로, 표준 Repeatable Read보다 더 강하게 동작하는 경우가 많습니다.
 
 ## 정리
 

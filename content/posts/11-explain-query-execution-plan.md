@@ -89,7 +89,7 @@ id=2: 서브쿼리 (먼저 실행)
 |-------------|------|
 | SIMPLE | 서브쿼리나 UNION 없는 단순 쿼리 |
 | PRIMARY | 가장 바깥쪽 SELECT |
-| SUBQUERY | WHERE 절의 스칼라 서브쿼리 |
+| SUBQUERY | 서브쿼리의 첫 SELECT (스칼라, `IN`, `EXISTS` 등 포함) |
 | DERIVED | FROM 절의 서브쿼리 (파생 테이블) |
 | UNION | UNION의 두 번째 이후 SELECT |
 | DEPENDENT SUBQUERY | 외부 쿼리에 의존하는 서브쿼리 (상관 서브쿼리) |

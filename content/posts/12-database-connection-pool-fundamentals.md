@@ -213,7 +213,7 @@ Connection is not available, request timed out after 3000ms
 spring.datasource.hikari.max-lifetime=1800000
 ```
 
-DB나 프록시가 먼저 연결을 끊기 전에 애플리케이션이 더 일찍 정리하게 맞추는 용도로 사용합니다. 이 값은 DB, 프록시, 로드밸런서의 idle timeout보다 **조금 짧게** 잡는 것이 일반적입니다.
+DB나 프록시가 먼저 연결을 끊기 전에 애플리케이션이 더 일찍 정리하게 맞추는 용도로 사용합니다. 이 값은 DB나 인프라가 강제로 종료하는 **connection lifetime limit보다 몇 초 짧게** 잡는 것이 일반적입니다. 반대로 idle timeout 대응은 `keepaliveTime`이나 `idleTimeout`과 함께 봐야 합니다.
 
 ### `idleTimeout`
 
@@ -224,6 +224,7 @@ spring.datasource.hikari.idle-timeout=600000
 ```
 
 트래픽이 들쭉날쭉한 서비스에서는 너무 공격적으로 줄이면 연결 생성과 제거가 자주 반복될 수 있습니다.
+HikariCP에서는 `minimumIdle < maximumPoolSize`일 때만 `idleTimeout`이 실제로 의미를 가집니다.
 
 ## Phase 6. 풀 크기는 어떻게 정해야 할까?
 
