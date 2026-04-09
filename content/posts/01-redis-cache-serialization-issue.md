@@ -202,7 +202,7 @@ fun defaultRedisCacheConfiguration(objectMapper: ObjectMapper): RedisCacheConfig
 | 직렬화 방식 | JDK 기본 직렬화 | JSON (타입 정보 포함) |
 | 디버깅 | Redis CLI로 확인 불가 | JSON으로 바로 확인 가능 |
 | 타입 안전성 | 역직렬화 시 Object 타입 | 정확한 타입 복원 |
-| Kotlin 호환성 | data class 문제 발생 | EVERYTHING으로 완전 지원 |
+| Kotlin 호환성 | data class 문제 발생 | EVERYTHING으로 이 사례 해결 |
 | 캐시 전략 | 일률적 직렬화 | JSON / String 이원화 |
 
 ---
