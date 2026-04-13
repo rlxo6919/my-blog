@@ -101,6 +101,9 @@
 - 표 앞뒤 설명 문장은 코드 펜스 밖에 둔다
 - SQL, Kotlin, JSON 등 실제 코드만 fenced code block 사용
 - 식별자 성격의 용어(`Service`, `Mapper`, `innerJoin`, `leftJoin` 등)는 본문과 소제목 모두 backtick으로 표기
+- SQL 문법 조각, 함수/메서드명, 애노테이션, 에러명, 잠금 모드, 알고리즘/패턴명처럼 **영문 기술 용어를 "이름"으로 다룰 때**도 backtick으로 표기
+- 예: `FOR UPDATE`, `GET_LOCK()`, `@Version`, `lock wait timeout`, `deadlock`, `tie-breaker`, `keyset pagination`, `advisory lock`, `Redlock`
+- 같은 글 안에서 같은 용어는 처음 등장만이 아니라 **반복 등장 시에도 표기를 일관되게 유지**
 - ASCII 다이어그램, 트랜잭션 타임라인, 인덱스 구조도처럼 텍스트 기반 예시는 적극 활용 가능
 
 ## 시리즈 문체 기준
