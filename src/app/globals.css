@@ -99,6 +99,17 @@ main {
   overflow-x: auto;
 }
 
+/* highlight.js가 언어를 인식하지 못한 코드 블록도 읽히게 보정 */
+.prose pre code:not(.hljs) {
+  color: #24292e;
+  background: transparent;
+}
+
+.dark .prose pre code:not(.hljs) {
+  color: #e1e4e8;
+  background: transparent;
+}
+
 @media (min-width: 640px) {
   .prose pre code {
     padding: 1.25rem;
@@ -176,6 +187,21 @@ pre code.hljs {
   --tw-prose-pre-bg: #161b22;
   --tw-prose-th-borders: #4b5563;
   --tw-prose-td-borders: #374151;
+}
+
+/* 제목 안 inline code는 backtick 표시를 없애고 본문 제목 흐름을 유지 */
+.prose :is(h1, h2, h3, h4, h5, h6) code {
+  color: inherit;
+  background: transparent;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  border-radius: 0;
+}
+
+.prose :is(h1, h2, h3, h4, h5, h6) code::before,
+.prose :is(h1, h2, h3, h4, h5, h6) code::after {
+  content: none;
 }
 
 /* 스크롤바 스타일 */
