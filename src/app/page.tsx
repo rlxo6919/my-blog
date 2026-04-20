@@ -1,13 +1,77 @@
 import Link from "next/link";
-import { getAllPosts, getAllTagsWithCount } from "@/lib/posts";
+import {
+  getAllPosts,
+  getAllTagsWithCount,
+  getFeaturedPosts,
+  getPostsByTag,
+} from "@/lib/posts";
 import PostList from "@/components/PostList";
+import RelatedPosts from "@/components/RelatedPosts";
+
+const SITE_URL = "https://www.ttukttak-coding.dev";
+
+const TOPIC_PILLARS: {
+  tag: string;
+  title: string;
+  description: string;
+  accent: string;
+}[] = [
+  {
+    tag: "동시성 제어",
+    title: "동시성 제어",
+    description: "격리 수준, MVCC, 락까지 — 읽기/쓰기 충돌을 다루는 원리",
+    accent: "from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 border-amber-200/60 dark:border-amber-900/40",
+  },
+  {
+    tag: "쿼리 최적화",
+    title: "쿼리 최적화",
+    description: "실행 계획, 인덱스, 배치 조회 — 느린 쿼리를 구조로 푸는 법",
+    accent: "from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-blue-200/60 dark:border-blue-900/40",
+  },
+  {
+    tag: "TCP/IP",
+    title: "네트워크 기초",
+    description: "OSI 계층부터 HTTP/3, TLS 핸드셰이크까지 차근차근",
+    accent: "from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 border-emerald-200/60 dark:border-emerald-900/40",
+  },
+];
 
 export default function Home() {
   const posts = getAllPosts();
   const tags = getAllTagsWithCount();
+  const featured = getFeaturedPosts(3);
+
+  const pillars = TOPIC_PILLARS.map((pillar) => {
+    const tagPosts = getPostsByTag(pillar.tag);
+    return {
+      ...pillar,
+      count: tagPosts.length,
+      latest: tagPosts[0],
+    };
+  }).filter((p) => p.count > 0);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    name: "뚝딱코딩",
+    url: SITE_URL,
+    inLanguage: "ko-KR",
+    description: "뚝딱뚝딱 만들어가는 개발 블로그",
+    blogPost: posts.slice(0, 10).map((post) => ({
+      "@type": "BlogPosting",
+      headline: post.title,
+      url: `${SITE_URL}/posts/${post.slug}`,
+      datePublished: post.date,
+      keywords: post.tags,
+    })),
+  };
 
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* 히어로 섹션 */}
       <section className="relative mb-8 sm:mb-14 py-8 sm:py-12 -mx-4 sm:-mx-6 px-4 sm:px-6 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/30 dark:via-indigo-950/30 dark:to-purple-950/30 rounded-2xl sm:rounded-3xl" />
@@ -28,7 +92,7 @@ export default function Home() {
               href="/tags"
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors"
             >
-              태그 둘러보기
+              주제별로 보기
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
@@ -36,6 +100,57 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* 추천 글 (featured: true인 글이 있을 때만) */}
+      {featured.length > 0 && (
+        <RelatedPosts
+          title="추천 글"
+          withTopBorder={false}
+          posts={featured.map(({ slug, title, date, category, readingTime }) => ({
+            slug,
+            title,
+            date,
+            category,
+            readingTime,
+          }))}
+        />
+      )}
+
+      {/* 주제별 탐색 */}
+      {pillars.length > 0 && (
+        <section className="mb-10 sm:mb-12 mt-10 sm:mt-12">
+          <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100 flex items-center gap-2">
+            <span className="w-1 h-5 bg-blue-500 rounded-full" />
+            주제별로 읽기
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {pillars.map((pillar) => (
+              <Link
+                key={pillar.tag}
+                href={`/tags/${pillar.tag}`}
+                className={`group relative p-4 sm:p-5 rounded-xl sm:rounded-2xl border bg-gradient-to-br ${pillar.accent} hover:shadow-lg hover:shadow-gray-100/50 dark:hover:shadow-none transition-all duration-300`}
+              >
+                <div className="flex items-baseline justify-between">
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    {pillar.title}
+                  </h3>
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                    {pillar.count}편
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1.5 leading-relaxed">
+                  {pillar.description}
+                </p>
+                {pillar.latest && (
+                  <p className="mt-3 text-xs text-gray-500 dark:text-gray-500 line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    최신: {pillar.latest.title}
+                  </p>
+                )}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 태그 바 */}
       {tags.length > 0 && (

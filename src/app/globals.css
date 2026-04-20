@@ -204,6 +204,15 @@ pre code.hljs {
   content: none;
 }
 
+/* 목차 앵커 클릭 시 sticky 헤더 높이만큼 오프셋 */
+.prose :is(h2, h3) {
+  scroll-margin-top: 5rem;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 /* 스크롤바 스타일 */
 ::-webkit-scrollbar {
   width: 6px;

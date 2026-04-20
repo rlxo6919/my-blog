@@ -20,6 +20,7 @@ export interface Post {
   excerpt: string;
   content: string;
   readingTime: number;
+  featured: boolean;
 }
 
 export interface TagSummary {
@@ -66,10 +67,17 @@ export function getAllPosts(): Post[] {
         excerpt: data.excerpt ?? "",
         content,
         readingTime: estimateReadingTime(content),
+        featured: data.featured === true,
       };
     });
 
   return posts.sort((a, b) => (a.date < b.date ? 1 : -1));
+}
+
+export function getFeaturedPosts(limit = 3): Post[] {
+  return getAllPosts()
+    .filter((p) => p.featured)
+    .slice(0, limit);
 }
 
 export function getPostBySlug(slug: string): Post | undefined {
@@ -88,6 +96,7 @@ export function getPostBySlug(slug: string): Post | undefined {
     excerpt: data.excerpt ?? "",
     content,
     readingTime: estimateReadingTime(content),
+    featured: data.featured === true,
   };
 }
 
@@ -98,6 +107,26 @@ export function getAdjacentPosts(slug: string) {
     prev: index < posts.length - 1 ? posts[index + 1] : null,
     next: index > 0 ? posts[index - 1] : null,
   };
+}
+
+export function getRelatedPosts(slug: string, limit = 3): Post[] {
+  const posts = getAllPosts();
+  const target = posts.find((p) => p.slug === slug);
+  if (!target) return [];
+
+  const targetTags = new Set(target.tags);
+
+  const scored = posts
+    .filter((p) => p.slug !== slug)
+    .map((p) => {
+      const shared = p.tags.filter((t) => targetTags.has(t)).length;
+      const categoryBonus = p.category === target.category ? 0.5 : 0;
+      return { post: p, score: shared + categoryBonus };
+    })
+    .filter((x) => x.score > 0)
+    .sort((a, b) => b.score - a.score || (a.post.date < b.post.date ? 1 : -1));
+
+  return scored.slice(0, limit).map((x) => x.post);
 }
 
 export async function markdownToHtml(markdown: string): Promise<string> {

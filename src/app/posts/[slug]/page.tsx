@@ -4,6 +4,7 @@ import {
   getAllPosts,
   getPostBySlug,
   getAdjacentPosts,
+  getRelatedPosts,
   markdownToHtml,
   extractToc,
 } from "@/lib/posts";
@@ -16,6 +17,8 @@ import ScrollProgress from "@/components/ScrollProgress";
 import MobileToc from "@/components/MobileToc";
 import ShareButtons from "@/components/ShareButtons";
 import Giscus from "@/components/Giscus";
+import RelatedPosts from "@/components/RelatedPosts";
+import DesktopToc from "@/components/DesktopToc";
 
 export function generateStaticParams() {
   const posts = getAllPosts();
@@ -42,13 +45,11 @@ export async function generateMetadata(
       type: "article",
       publishedTime: post.date,
       tags: post.tags,
-      images: [{ url: "/opengraph-image.webp", width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.excerpt || `${post.title} - 뚝딱코딩`,
-      images: ["/opengraph-image.webp"],
     },
   };
 }
@@ -62,8 +63,9 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
   const content = await markdownToHtml(post.content);
   const toc = extractToc(post.content);
   const { prev, next } = getAdjacentPosts(slug);
+  const related = getRelatedPosts(slug, 3);
 
-  const jsonLd = {
+  const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: post.title,
@@ -72,8 +74,13 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
     dateModified: post.date,
     url: `${SITE_URL}/posts/${slug}`,
     mainEntityOfPage: `${SITE_URL}/posts/${slug}`,
-    image: `${SITE_URL}/opengraph-image.webp`,
-    author: { "@type": "Person", name: "뚝딱코딩" },
+    image: `${SITE_URL}/posts/${slug}/opengraph-image`,
+    inLanguage: "ko-KR",
+    author: {
+      "@type": "Person",
+      name: "뚝딱코딩",
+      url: `${SITE_URL}/about`,
+    },
     publisher: {
       "@type": "Organization",
       name: "뚝딱코딩",
@@ -85,11 +92,44 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
     keywords: post.tags,
   };
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "홈",
+        item: SITE_URL,
+      },
+      ...(post.tags[0]
+        ? [
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: `#${post.tags[0]}`,
+              item: `${SITE_URL}/tags/${encodeURIComponent(post.tags[0])}`,
+            },
+          ]
+        : []),
+      {
+        "@type": "ListItem",
+        position: post.tags[0] ? 3 : 2,
+        name: post.title,
+        item: `${SITE_URL}/posts/${slug}`,
+      },
+    ],
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <ScrollProgress />
       <div className="flex gap-10">
@@ -191,35 +231,23 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
             </div>
           )}
 
+          {/* 관련 글 */}
+          <RelatedPosts
+            posts={related.map(({ slug, title, date, category, readingTime }) => ({
+              slug,
+              title,
+              date,
+              category,
+              readingTime,
+            }))}
+          />
+
           {/* 댓글 */}
           <Giscus />
         </article>
 
-        {/* 사이드 목차 (데스크탑) */}
-        {toc.length > 0 && (
-          <aside className="hidden lg:block w-56 shrink-0">
-            <nav className="sticky top-20">
-              <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
-                목차
-              </h2>
-              <ul className="space-y-2 text-sm border-l-2 border-gray-100 dark:border-gray-800">
-                {toc.map((item) => (
-                  <li
-                    key={item.id}
-                    className={item.level === 3 ? "pl-6" : "pl-3"}
-                  >
-                    <a
-                      href={`#${item.id}`}
-                      className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
-                    >
-                      {item.text}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </aside>
-        )}
+        {/* 사이드 목차 (데스크탑, 스크롤스파이) */}
+        <DesktopToc toc={toc} />
       </div>
     </>
   );
