@@ -146,7 +146,7 @@ const TOTAL_PAGES = BOOKS.reduce((s, b) => s + b.pages, 0);
 
 export default function EbookPage() {
   return (
-    <div className="relative">
+    <div className="relative overflow-x-clip">
       {/* 백그라운드 블롭 */}
       <div
         aria-hidden
@@ -158,13 +158,13 @@ export default function EbookPage() {
       </div>
 
       {/* HERO */}
-      <section className="relative pt-4 pb-16 sm:pb-24 px-2 sm:px-4">
+      <section className="relative pt-4 pb-12 sm:pb-24 px-0 sm:px-4">
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 mb-6 rounded-full bg-white/70 dark:bg-gray-900/70 backdrop-blur border border-gray-200 dark:border-gray-800 text-xs font-semibold tracking-widest text-gray-600 dark:text-gray-400">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             FREE EBOOKS
           </div>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black mb-5 leading-[1.15] tracking-tight">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-black mb-5 leading-[1.15] tracking-tight">
             <span className="bg-gradient-to-br from-gray-900 via-gray-700 to-gray-500 dark:from-white dark:via-gray-200 dark:to-gray-400 bg-clip-text text-transparent">
               백엔드 면접
             </span>
@@ -173,13 +173,13 @@ export default function EbookPage() {
               핵심 노트
             </span>
           </h1>
-          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto mb-8 leading-relaxed">
+          <p className="text-sm sm:text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto mb-8 leading-relaxed">
             동시성·트랜잭션 / DB·쿼리 최적화 / 네트워크 —<br className="hidden sm:inline" />
             주제별 3권을 무료 PDF로 받으세요.
           </p>
 
           {/* 통계 바 */}
-          <div className="inline-flex flex-wrap items-center justify-center gap-x-6 sm:gap-x-8 gap-y-3 px-6 py-4 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur border border-gray-200 dark:border-gray-800 mb-12">
+          <div className="inline-flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-8 gap-y-3 px-4 sm:px-6 py-3 sm:py-4 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur border border-gray-200 dark:border-gray-800 mb-12">
             <Stat value={`${BOOKS.length}`} label="권" />
             <Divider />
             <Stat value={`${TOTAL_CHAPTERS}`} label="강의" />
@@ -190,12 +190,12 @@ export default function EbookPage() {
           </div>
 
           {/* 책 표지 스택 비주얼 */}
-          <div className="relative h-[260px] sm:h-[320px] mx-auto max-w-md mb-2">
+          <div className="relative h-[180px] sm:h-[320px] mx-auto max-w-md mb-2 overflow-visible">
             {BOOKS.map((book, i) => {
               const positions = [
-                "-translate-x-[110%] -rotate-[10deg] z-10",
-                "-translate-x-1/2 scale-110 z-30",
-                "translate-x-[10%] rotate-[10deg] z-20",
+                "-translate-x-[90%] sm:-translate-x-[110%] -rotate-[8deg] sm:-rotate-[10deg] z-10",
+                "-translate-x-1/2 scale-105 sm:scale-110 z-30",
+                "-translate-x-[10%] sm:translate-x-[10%] rotate-[8deg] sm:rotate-[10deg] z-20",
               ];
               return (
                 <a
@@ -206,14 +206,14 @@ export default function EbookPage() {
                 >
                   <div className="relative">
                     <div
-                      className={`absolute -inset-3 bg-gradient-to-br ${book.theme.coverGlow} rounded-2xl blur-2xl opacity-70 group-hover:opacity-100 group-hover:-inset-5 transition-all duration-500`}
+                      className={`absolute -inset-2 sm:-inset-3 bg-gradient-to-br ${book.theme.coverGlow} rounded-2xl blur-2xl opacity-70 group-hover:opacity-100 group-hover:-inset-5 transition-all duration-500`}
                     />
                     <Image
                       src={book.cover}
                       alt={`${book.title} 표지`}
                       width={170}
                       height={241}
-                      className="relative rounded-lg shadow-2xl ring-1 ring-black/10 group-hover:ring-white/30 group-hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.35)] transition-all duration-500"
+                      className="relative rounded-lg shadow-2xl ring-1 ring-black/10 group-hover:ring-white/30 group-hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.35)] transition-all duration-500 w-[100px] sm:w-[170px] h-auto"
                       priority={i === 1}
                     />
                   </div>
@@ -233,8 +233,8 @@ export default function EbookPage() {
       </section>
 
       {/* FOOTER NOTE */}
-      <section className="mt-20 mb-12">
-        <div className="relative overflow-hidden rounded-3xl p-8 sm:p-10 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-950 border border-gray-200 dark:border-gray-800">
+      <section className="mt-14 sm:mt-20 mb-12">
+        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl p-5 sm:p-10 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-950 border border-gray-200 dark:border-gray-800">
           <div className="relative">
             <h2 className="text-xl sm:text-2xl font-bold mb-4">읽고 좋으셨다면</h2>
             <ul className="space-y-3 text-gray-700 dark:text-gray-300">
@@ -283,9 +283,9 @@ function Stat({
   highlight?: boolean;
 }) {
   return (
-    <div className="flex items-baseline gap-1.5">
+    <div className="flex items-baseline gap-1">
       <span
-        className={`text-2xl font-bold ${
+        className={`text-xl sm:text-2xl font-bold ${
           highlight
             ? "bg-gradient-to-r from-emerald-500 to-teal-500 bg-clip-text text-transparent"
             : "text-gray-900 dark:text-white"
@@ -293,7 +293,7 @@ function Stat({
       >
         {value}
       </span>
-      <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">{label}</span>
+      <span className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium">{label}</span>
     </div>
   );
 }
@@ -308,7 +308,7 @@ function BookCard({ book, reversed }: { book: Book; reversed: boolean }) {
       id={book.id}
       className="group relative scroll-mt-20"
     >
-      <div className="relative overflow-hidden rounded-3xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/40 backdrop-blur-sm shadow-sm hover:shadow-xl transition-shadow duration-500">
+      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/40 backdrop-blur-sm shadow-sm hover:shadow-xl transition-shadow duration-500">
         {/* 컬러 글로우 */}
         <div
           aria-hidden
@@ -318,9 +318,7 @@ function BookCard({ book, reversed }: { book: Book; reversed: boolean }) {
         />
 
         <div
-          className={`relative grid sm:grid-cols-12 gap-6 sm:gap-10 p-6 sm:p-10 ${
-            reversed ? "sm:flex-row-reverse" : ""
-          }`}
+          className={`relative grid sm:grid-cols-12 gap-5 sm:gap-10 p-4 sm:p-10`}
         >
           {/* 표지 */}
           <div
@@ -337,7 +335,7 @@ function BookCard({ book, reversed }: { book: Book; reversed: boolean }) {
                 alt={`${book.title} 표지`}
                 width={220}
                 height={312}
-                className="relative rounded-lg shadow-2xl ring-1 ring-black/10 transform group-hover/cover:-translate-y-1 transition-transform duration-300"
+                className="relative rounded-lg shadow-2xl ring-1 ring-black/10 transform group-hover/cover:-translate-y-1 transition-transform duration-300 w-[160px] sm:w-[220px] h-auto"
               />
             </div>
           </div>
@@ -354,18 +352,18 @@ function BookCard({ book, reversed }: { book: Book; reversed: boolean }) {
                 {book.chapters}강 · {book.pages}p · A5 · {book.sizeMB}
               </span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black leading-tight mb-2 tracking-tight">
+            <h2 className="text-xl sm:text-3xl font-black leading-tight mb-2 tracking-tight">
               {book.title}
             </h2>
-            <p className={`text-sm sm:text-base font-medium mb-4 ${book.theme.chipText}`}>
+            <p className={`text-sm sm:text-base font-medium mb-3 sm:mb-4 ${book.theme.chipText}`}>
               {book.subtitle}
             </p>
-            <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-5">
+            <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-4 sm:mb-5">
               {book.description}
             </p>
 
             {/* TOC chips */}
-            <div className="space-y-3 mb-7">
+            <div className="space-y-2.5 sm:space-y-3 mb-5 sm:mb-7">
               {book.toc.map((part) => (
                 <div key={part.part}>
                   <p className="text-[11px] font-semibold tracking-wider uppercase text-gray-500 dark:text-gray-400 mb-1.5">
@@ -375,7 +373,7 @@ function BookCard({ book, reversed }: { book: Book; reversed: boolean }) {
                     {part.chapters.map((ch) => (
                       <span
                         key={ch}
-                        className={`text-xs font-medium px-2.5 py-1 rounded-md border ${book.theme.chipBg} ${book.theme.chipText}`}
+                        className={`text-xs font-medium px-2 sm:px-2.5 py-1 rounded-md border ${book.theme.chipBg} ${book.theme.chipText}`}
                       >
                         {ch}
                       </span>
@@ -386,11 +384,11 @@ function BookCard({ book, reversed }: { book: Book; reversed: boolean }) {
             </div>
 
             {/* CTA */}
-            <div className="flex flex-wrap items-center gap-3 mt-auto">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 mt-auto">
               <a
                 href={book.pdf}
                 download={book.downloadName}
-                className={`inline-flex items-center gap-2 px-6 py-3 rounded-full text-white font-semibold text-sm shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl ${book.theme.button}`}
+                className={`inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-white font-semibold text-sm shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl ${book.theme.button}`}
               >
                 <svg
                   className="w-4 h-4"
@@ -407,7 +405,7 @@ function BookCard({ book, reversed }: { book: Book; reversed: boolean }) {
                 </svg>
                 PDF 다운로드
               </a>
-              <span className="text-xs text-gray-500 dark:text-gray-500">
+              <span className="text-xs text-gray-500 dark:text-gray-500 text-center sm:text-left">
                 계정·결제 없이 바로
               </span>
             </div>
