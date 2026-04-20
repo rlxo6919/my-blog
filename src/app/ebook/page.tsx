@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { EBOOKS, EBOOK_TOTAL_CHAPTERS, EBOOK_TOTAL_PAGES, type Ebook } from "@/lib/ebooks";
 
 const SITE_URL = "https://www.ttukttak-coding.dev";
 
@@ -15,134 +16,13 @@ export const metadata: Metadata = {
       "동시성·트랜잭션, DB·쿼리 최적화, 네트워크 — 주제별 3권을 무료 PDF로 받으실 수 있습니다.",
     url: `${SITE_URL}/ebook`,
     type: "article",
-    images: [{ url: "/ebook/cover-concurrency-10.png", width: 1050, height: 1488 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "백엔드 면접 핵심 노트 — 무료 PDF",
     description: "동시성·트랜잭션, DB·쿼리 최적화, 네트워크 — 주제별 3권 무료.",
-    images: ["/ebook/cover-concurrency-10.png"],
   },
 };
-
-type Book = {
-  id: string;
-  title: string;
-  subtitle: string;
-  cover: string;
-  pdf: string;
-  downloadName: string;
-  pages: number;
-  chapters: number;
-  sizeMB: string;
-  theme: {
-    accent: string;
-    coverGlow: string;
-    badgeBg: string;
-    badgeText: string;
-    chipBg: string;
-    chipText: string;
-    button: string;
-  };
-  description: string;
-  toc: { part: string; chapters: string[] }[];
-};
-
-const BOOKS: Book[] = [
-  {
-    id: "concurrency-10",
-    title: "동시성·트랜잭션 10강",
-    subtitle: "ACID · 격리 수준 · MVCC · 락 · 멱등성",
-    cover: "/ebook/cover-concurrency-10.png",
-    pdf: "/ebook/backend-cs-concurrency-10.pdf",
-    downloadName: "백엔드-동시성-트랜잭션-10강.pdf",
-    pages: 175,
-    chapters: 10,
-    sizeMB: "5.4MB",
-    theme: {
-      accent: "amber",
-      coverGlow: "from-amber-300/40 to-orange-500/40",
-      badgeBg: "bg-amber-100/80 dark:bg-amber-900/40 backdrop-blur",
-      badgeText: "text-amber-700 dark:text-amber-300",
-      chipBg: "bg-amber-50 dark:bg-amber-950/40 border-amber-200/60 dark:border-amber-800/40",
-      chipText: "text-amber-800 dark:text-amber-200",
-      button:
-        "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 shadow-amber-500/30",
-    },
-    description:
-      "트랜잭션과 동시성 제어를 한 권에 모았습니다. 락 경합·팬텀 리드·중복 결제 같은 실무 사고의 원인과 도구를 정리합니다.",
-    toc: [
-      { part: "트랜잭션 기초", chapters: ["ACID", "격리 수준", "Dirty / Phantom Read"] },
-      { part: "동시성 제어 메커니즘", chapters: ["MVCC", "락 기본", "2PL"] },
-      { part: "락과 멱등성 실무", chapters: ["FOR UPDATE", "낙관 vs 비관", "분산 락", "멱등성"] },
-    ],
-  },
-  {
-    id: "query-9",
-    title: "DB·쿼리 최적화 9강",
-    subtitle: "정규화 · 인덱스 · 실행 계획 · 캐시 · 페이지네이션",
-    cover: "/ebook/cover-query-9.png",
-    pdf: "/ebook/backend-cs-query-9.pdf",
-    downloadName: "백엔드-DB-쿼리최적화-9강.pdf",
-    pages: 172,
-    chapters: 9,
-    sizeMB: "5.6MB",
-    theme: {
-      accent: "blue",
-      coverGlow: "from-blue-400/40 to-indigo-500/40",
-      badgeBg: "bg-blue-100/80 dark:bg-blue-900/40 backdrop-blur",
-      badgeText: "text-blue-700 dark:text-blue-300",
-      chipBg: "bg-blue-50 dark:bg-blue-950/40 border-blue-200/60 dark:border-blue-800/40",
-      chipText: "text-blue-800 dark:text-blue-200",
-      button:
-        "bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 shadow-blue-500/30",
-    },
-    description:
-      "조회를 느리게 만드는 원인과 구조적 해결책. 쿼리 한 줄 튜닝이 아니라 패턴이 반복될 때 적용 가능한 사고 틀을 만듭니다.",
-    toc: [
-      { part: "데이터베이스 설계 기초", chapters: ["정규화"] },
-      { part: "인덱스와 실행 계획", chapters: ["인덱스 튜닝", "인덱스가 안 타는 이유", "EXPLAIN"] },
-      {
-        part: "조회 성능",
-        chapters: ["커넥션 풀", "N+1", "캐시 전략", "캐시 스탬피드", "페이지네이션"],
-      },
-    ],
-  },
-  {
-    id: "network-7",
-    title: "네트워크 7강",
-    subtitle: "OSI · TCP/UDP · HTTP · TLS · DNS",
-    cover: "/ebook/cover-network-7.png",
-    pdf: "/ebook/backend-cs-network-7.pdf",
-    downloadName: "백엔드-네트워크-7강.pdf",
-    pages: 133,
-    chapters: 7,
-    sizeMB: "4.7MB",
-    theme: {
-      accent: "emerald",
-      coverGlow: "from-emerald-300/40 to-teal-500/40",
-      badgeBg: "bg-emerald-100/80 dark:bg-emerald-900/40 backdrop-blur",
-      badgeText: "text-emerald-700 dark:text-emerald-300",
-      chipBg:
-        "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200/60 dark:border-emerald-800/40",
-      chipText: "text-emerald-800 dark:text-emerald-200",
-      button:
-        "bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-emerald-500/30",
-    },
-    description:
-      "백엔드 개발자가 알아야 할 네트워크 기초. OSI에서 시작해 TCP·HTTP·TLS·DNS까지, 요청 한 번이 흘러가는 길을 그릴 수 있게 만드는 게 목표입니다.",
-    toc: [
-      {
-        part: "네트워크 기초",
-        chapters: ["OSI / TCP/IP", "IPv4 vs IPv6", "TCP vs UDP", "TCP 4-way"],
-      },
-      { part: "HTTP와 보안", chapters: ["HTTP/1·2·3", "HTTPS · TLS", "DNS"] },
-    ],
-  },
-];
-
-const TOTAL_CHAPTERS = BOOKS.reduce((s, b) => s + b.chapters, 0);
-const TOTAL_PAGES = BOOKS.reduce((s, b) => s + b.pages, 0);
 
 export default function EbookPage() {
   return (
@@ -180,29 +60,29 @@ export default function EbookPage() {
 
           {/* 통계 바 */}
           <div className="inline-flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-8 gap-y-3 px-4 sm:px-6 py-3 sm:py-4 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur border border-gray-200 dark:border-gray-800 mb-12">
-            <Stat value={`${BOOKS.length}`} label="권" />
+            <Stat value={`${EBOOKS.length}`} label="권" />
             <Divider />
-            <Stat value={`${TOTAL_CHAPTERS}`} label="강의" />
+            <Stat value={`${EBOOK_TOTAL_CHAPTERS}`} label="강의" />
             <Divider />
-            <Stat value={`${TOTAL_PAGES}`} label="페이지" />
+            <Stat value={`${EBOOK_TOTAL_PAGES}`} label="페이지" />
             <Divider />
             <Stat value="100%" label="무료" highlight />
           </div>
 
           {/* 책 표지 스택 비주얼 */}
           <div className="relative h-[180px] sm:h-[320px] mx-auto max-w-md mb-2 overflow-visible">
-            {BOOKS.map((book, i) => {
+            {EBOOKS.map((book, i) => {
               const positions = [
                 "-translate-x-[90%] sm:-translate-x-[110%] -rotate-[8deg] sm:-rotate-[10deg] z-10",
                 "-translate-x-1/2 scale-105 sm:scale-110 z-30",
                 "-translate-x-[10%] sm:translate-x-[10%] rotate-[8deg] sm:rotate-[10deg] z-20",
               ];
               return (
-                <a
+                <Link
                   key={book.id}
-                  href={`#${book.id}`}
+                  href={`/ebook/${book.id}`}
                   className={`group absolute top-0 left-1/2 ${positions[i]} transition-all duration-500 ease-out hover:z-40 hover:-translate-y-6 hover:scale-[1.28] hover:rotate-0`}
-                  aria-label={`${book.title}로 이동`}
+                  aria-label={`${book.title} 상세 페이지로 이동`}
                 >
                   <div className="relative">
                     <div
@@ -217,17 +97,17 @@ export default function EbookPage() {
                       priority={i === 1}
                     />
                   </div>
-                </a>
+                </Link>
               );
             })}
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-500">표지를 클릭하면 해당 책으로 이동합니다</p>
+          <p className="text-xs text-gray-500 dark:text-gray-500">표지를 클릭하면 상세 페이지로 이동합니다</p>
         </div>
       </section>
 
       {/* BOOKS */}
       <section className="space-y-12 sm:space-y-16">
-        {BOOKS.map((book, i) => (
+        {EBOOKS.map((book, i) => (
           <BookCard key={book.id} book={book} reversed={i % 2 === 1} />
         ))}
       </section>
@@ -302,12 +182,9 @@ function Divider() {
   return <span className="hidden sm:inline w-px h-5 bg-gray-300 dark:bg-gray-700" />;
 }
 
-function BookCard({ book, reversed }: { book: Book; reversed: boolean }) {
+function BookCard({ book, reversed }: { book: Ebook; reversed: boolean }) {
   return (
-    <article
-      id={book.id}
-      className="group relative scroll-mt-20"
-    >
+    <article id={book.id} className="group relative scroll-mt-20">
       <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/40 backdrop-blur-sm shadow-sm hover:shadow-xl transition-shadow duration-500">
         {/* 컬러 글로우 */}
         <div
@@ -317,16 +194,18 @@ function BookCard({ book, reversed }: { book: Book; reversed: boolean }) {
           } w-72 h-72 bg-gradient-to-br ${book.theme.coverGlow} rounded-full blur-3xl opacity-60`}
         />
 
-        <div
-          className={`relative grid sm:grid-cols-12 gap-5 sm:gap-10 p-4 sm:p-10`}
-        >
+        <div className={`relative grid sm:grid-cols-12 gap-5 sm:gap-10 p-4 sm:p-10`}>
           {/* 표지 */}
           <div
             className={`sm:col-span-4 flex justify-center ${
               reversed ? "sm:order-2" : ""
             }`}
           >
-            <div className="relative group/cover">
+            <Link
+              href={`/ebook/${book.id}`}
+              className="relative group/cover"
+              aria-label={`${book.title} 상세 페이지로 이동`}
+            >
               <div
                 className={`absolute -inset-4 bg-gradient-to-br ${book.theme.coverGlow} rounded-2xl blur-2xl opacity-50 group-hover/cover:opacity-80 transition-opacity`}
               />
@@ -337,7 +216,7 @@ function BookCard({ book, reversed }: { book: Book; reversed: boolean }) {
                 height={312}
                 className="relative rounded-lg shadow-2xl ring-1 ring-black/10 transform group-hover/cover:-translate-y-1 transition-transform duration-300 w-[160px] sm:w-[220px] h-auto"
               />
-            </div>
+            </Link>
           </div>
 
           {/* 본문 */}
@@ -353,7 +232,12 @@ function BookCard({ book, reversed }: { book: Book; reversed: boolean }) {
               </span>
             </div>
             <h2 className="text-xl sm:text-3xl font-black leading-tight mb-2 tracking-tight">
-              {book.title}
+              <Link
+                href={`/ebook/${book.id}`}
+                className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
+                {book.title}
+              </Link>
             </h2>
             <p className={`text-sm sm:text-base font-medium mb-3 sm:mb-4 ${book.theme.chipText}`}>
               {book.subtitle}
@@ -405,6 +289,12 @@ function BookCard({ book, reversed }: { book: Book; reversed: boolean }) {
                 </svg>
                 PDF 다운로드
               </a>
+              <Link
+                href={`/ebook/${book.id}`}
+                className="inline-flex items-center justify-center gap-1.5 px-5 py-3 rounded-full border border-gray-300 dark:border-gray-700 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                상세 보기 →
+              </Link>
               <span className="text-xs text-gray-500 dark:text-gray-500 text-center sm:text-left">
                 계정·결제 없이 바로
               </span>

@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAllPosts, getAllTags, tagToSlug } from "@/lib/posts";
+import { EBOOKS } from "@/lib/ebooks";
 
 const SITE_URL = "https://www.ttukttak-coding.dev";
 
@@ -34,6 +35,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/privacy`, lastModified: latestPostDate, changeFrequency: "yearly", priority: 0.2 },
     { url: `${SITE_URL}/tags`, lastModified: latestPostDate, changeFrequency: "weekly", priority: 0.6 },
     { url: `${SITE_URL}/ebook`, lastModified: latestPostDate, changeFrequency: "monthly", priority: 0.9 },
+    ...EBOOKS.map((book) => ({
+      url: `${SITE_URL}/ebook/${book.id}`,
+      lastModified: latestPostDate,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
     ...postEntries,
     ...tagEntries,
   ];
