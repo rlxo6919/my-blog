@@ -4,6 +4,7 @@ import {
   getAllTagsWithCount,
   getFeaturedPosts,
   getPostsByTag,
+  tagToSlug,
 } from "@/lib/posts";
 import PostList from "@/components/PostList";
 import RelatedPosts from "@/components/RelatedPosts";
@@ -127,7 +128,7 @@ export default function Home() {
             {pillars.map((pillar) => (
               <Link
                 key={pillar.tag}
-                href={`/tags/${pillar.tag}`}
+                href={`/tags/${tagToSlug(pillar.tag)}`}
                 className={`group relative p-4 sm:p-5 rounded-xl sm:rounded-2xl border bg-gradient-to-br ${pillar.accent} hover:shadow-lg hover:shadow-gray-100/50 dark:hover:shadow-none transition-all duration-300`}
               >
                 <div className="flex items-baseline justify-between">
@@ -160,7 +161,7 @@ export default function Home() {
               return (
                 <Link
                   key={tag}
-                  href={`/tags/${tag}`}
+                  href={`/tags/${tagToSlug(tag)}`}
                   className="shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-blue-300 dark:hover:border-blue-700 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-all"
                 >
                   #{tag} ({count})

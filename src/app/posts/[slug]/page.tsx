@@ -7,6 +7,7 @@ import {
   getRelatedPosts,
   markdownToHtml,
   extractToc,
+  tagToSlug,
 } from "@/lib/posts";
 import { CATEGORY_LABELS } from "@/lib/categories";
 import { notFound } from "next/navigation";
@@ -108,7 +109,7 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
               "@type": "ListItem",
               position: 2,
               name: `#${post.tags[0]}`,
-              item: `${SITE_URL}/tags/${encodeURIComponent(post.tags[0])}`,
+              item: `${SITE_URL}/tags/${tagToSlug(post.tags[0])}`,
             },
           ]
         : []),
@@ -160,7 +161,7 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
                 {post.tags.map((tag) => (
                   <Link
                     key={tag}
-                    href={`/tags/${tag}`}
+                    href={`/tags/${tagToSlug(tag)}`}
                     className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2.5 py-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                   >
                     #{tag}

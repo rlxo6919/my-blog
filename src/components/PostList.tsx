@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import type { Category } from "@/lib/categories";
 import { CATEGORY_LABELS } from "@/lib/categories";
+import { tagToSlug } from "@/lib/tags";
 
 interface PostItem {
   slug: string;
@@ -142,7 +143,7 @@ export default function PostList({ posts }: { posts: PostItem[] }) {
                   {post.tags.map((tag) => (
                     <Link
                       key={tag}
-                      href={`/tags/${tag}`}
+                      href={`/tags/${tagToSlug(tag)}`}
                       className="text-xs font-medium bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 px-2.5 py-1 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                     >
                       #{tag}

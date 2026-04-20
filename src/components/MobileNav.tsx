@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 const NAV_ITEMS = [
   { href: "/", label: "홈" },
   { href: "/tags", label: "태그" },
+  { href: "/ebook", label: "전자책" },
   { href: "/about", label: "소개" },
 ];
 

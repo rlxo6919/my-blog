@@ -171,6 +171,19 @@ export function getPostsByTag(tag: string): Post[] {
   return getAllPosts().filter((post) => post.tags.includes(tag));
 }
 
+export { tagToSlug } from "./tags";
+import { tagToSlug } from "./tags";
+
+export function getTagBySlug(slug: string): string | undefined {
+  const decoded = decodeURIComponent(slug);
+  return getAllTags().find((t) => tagToSlug(t) === decoded);
+}
+
+export function getPostsByTagSlug(slug: string): Post[] {
+  const tag = getTagBySlug(slug);
+  return tag ? getPostsByTag(tag) : [];
+}
+
 export interface TocItem {
   id: string;
   text: string;

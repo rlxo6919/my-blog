@@ -113,6 +113,9 @@ export default function RootLayout({
                 <Link href="/tags" className="px-3 py-1.5 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                   태그
                 </Link>
+                <Link href="/ebook" className="px-3 py-1.5 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-blue-600 dark:text-blue-400 font-medium">
+                  전자책
+                </Link>
                 <Link href="/about" className="px-3 py-1.5 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                   소개
                 </Link>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getAllTagsWithCount } from "@/lib/posts";
+import { getAllTagsWithCount, tagToSlug } from "@/lib/posts";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -47,7 +47,7 @@ export default function TagsPage() {
           return (
             <Link
               key={tag}
-              href={`/tags/${tag}`}
+              href={`/tags/${tagToSlug(tag)}`}
               className="group relative p-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-transparent bg-white dark:bg-gray-900/50 hover:shadow-lg transition-all duration-300 overflow-hidden"
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${color.gradient} opacity-0 group-hover:opacity-5 dark:group-hover:opacity-10 transition-opacity`} />

@@ -1,51 +1,53 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getAllTags, getPostsByTag } from "@/lib/posts";
+import { getAllTags, getPostsByTagSlug, getTagBySlug, tagToSlug } from "@/lib/posts";
 import { CATEGORY_LABELS } from "@/lib/categories";
 import { notFound } from "next/navigation";
 
 export function generateStaticParams() {
   const tags = getAllTags();
-  return tags.map((tag) => ({ tag }));
+  return tags.map((tag) => ({ tag: tagToSlug(tag) }));
 }
 
 export async function generateMetadata(
   props: { params: Promise<{ tag: string }> }
 ): Promise<Metadata> {
-  const { tag } = await props.params;
-  const decoded = decodeURIComponent(tag);
+  const { tag: slug } = await props.params;
+  const tag = getTagBySlug(slug);
+  if (!tag) return {};
+  const slugged = tagToSlug(tag);
   return {
-    title: `#${decoded}`,
-    description: `"${decoded}" 태그가 포함된 글 목록`,
+    title: `#${tag}`,
+    description: `"${tag}" 태그가 포함된 글 목록`,
     alternates: {
-      canonical: `/tags/${encodeURIComponent(decoded)}`,
+      canonical: `/tags/${slugged}`,
     },
     openGraph: {
-      title: `#${decoded} | 뚝딱코딩`,
-      description: `"${decoded}" 태그가 포함된 글 목록`,
-      url: `https://www.ttukttak-coding.dev/tags/${encodeURIComponent(decoded)}`,
+      title: `#${tag} | 뚝딱코딩`,
+      description: `"${tag}" 태그가 포함된 글 목록`,
+      url: `https://www.ttukttak-coding.dev/tags/${slugged}`,
       type: "website",
       images: [{ url: "/opengraph-image.webp", width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
-      title: `#${decoded} | 뚝딱코딩`,
-      description: `"${decoded}" 태그가 포함된 글 목록`,
+      title: `#${tag} | 뚝딱코딩`,
+      description: `"${tag}" 태그가 포함된 글 목록`,
       images: ["/opengraph-image.webp"],
     },
   };
 }
 
 export default async function TagPage(props: PageProps<"/tags/[tag]">) {
-  const { tag } = await props.params;
-  const decodedTag = decodeURIComponent(tag);
-  const posts = getPostsByTag(decodedTag);
+  const { tag: slug } = await props.params;
+  const tag = getTagBySlug(slug);
+  const posts = getPostsByTagSlug(slug);
 
-  if (posts.length === 0) notFound();
+  if (!tag || posts.length === 0) notFound();
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-2">#{decodedTag}</h1>
+      <h1 className="text-3xl font-bold mb-2">#{tag}</h1>
       <p className="text-gray-500 dark:text-gray-400 mb-8">{posts.length}개의 글</p>
       <div className="space-y-1">
         {posts.map((post) => (
