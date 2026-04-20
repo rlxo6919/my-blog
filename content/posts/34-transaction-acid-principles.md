@@ -4,6 +4,7 @@ date: "2026-04-20"
 category: "study"
 tags: ["트랜잭션"]
 excerpt: "ACID 네 가지 속성이 각각 무엇을 보장하고 무엇은 보장하지 않는지, MySQL InnoDB 기준 구현 포인트와 함께 정리합니다."
+featured: true
 ---
 
 ## ACID, 왜 알아야 하나요?

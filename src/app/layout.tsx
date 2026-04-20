@@ -75,6 +75,28 @@ export default function RootLayout({
             __html: `(function(){try{var t=localStorage.getItem("theme");if(t==="dark"){document.documentElement.classList.add("dark")}}catch(e){}})()`,
           }}
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "뚝딱코딩",
+              alternateName: "ttukttak-coding",
+              url: SITE_URL,
+              inLanguage: "ko-KR",
+              description: "뚝딱뚝딱 만들어가는 개발 블로그",
+              publisher: {
+                "@type": "Organization",
+                name: "뚝딱코딩",
+                logo: {
+                  "@type": "ImageObject",
+                  url: `${SITE_URL}/icon.png`,
+                },
+              },
+            }),
+          }}
+        />
       </head>
       <body className="min-h-full flex flex-col bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors">
         <header className="border-b border-gray-200 dark:border-gray-800 sticky top-0 bg-white/80 dark:bg-gray-950/80 backdrop-blur-sm z-40">

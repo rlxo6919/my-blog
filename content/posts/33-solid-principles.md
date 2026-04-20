@@ -4,6 +4,7 @@ date: "2026-04-20"
 category: "study"
 tags: ["SOLID"]
 excerpt: "SOLID 다섯 원칙을 암기식 정의가 아니라 변경 비용 관점에서 풀고, Java 예제와 JDK 사례로 어디에 적용할지 정리합니다."
+featured: true
 ---
 
 ## SOLID, 왜 알아야 하나요?
