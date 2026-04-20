@@ -193,26 +193,27 @@ export default function EbookPage() {
           <div className="relative h-[260px] sm:h-[320px] mx-auto max-w-md mb-2">
             {BOOKS.map((book, i) => {
               const positions = [
-                "left-1/2 -translate-x-[110%] -rotate-[10deg] z-10",
-                "left-1/2 -translate-x-1/2 z-30 scale-110",
-                "left-1/2 translate-x-[10%] rotate-[10deg] z-20",
+                "-translate-x-[110%] -rotate-[10deg] z-10",
+                "-translate-x-1/2 scale-110 z-30",
+                "translate-x-[10%] rotate-[10deg] z-20",
               ];
               return (
                 <a
                   key={book.id}
                   href={`#${book.id}`}
-                  className={`absolute top-0 ${positions[i]} transition-transform hover:translate-y-[-8px] duration-300`}
+                  className={`group absolute top-0 left-1/2 ${positions[i]} transition-all duration-500 ease-out hover:z-40 hover:-translate-y-6 hover:scale-[1.28] hover:rotate-0`}
+                  aria-label={`${book.title}로 이동`}
                 >
                   <div className="relative">
                     <div
-                      className={`absolute -inset-3 bg-gradient-to-br ${book.theme.coverGlow} rounded-2xl blur-2xl opacity-70`}
+                      className={`absolute -inset-3 bg-gradient-to-br ${book.theme.coverGlow} rounded-2xl blur-2xl opacity-70 group-hover:opacity-100 group-hover:-inset-5 transition-all duration-500`}
                     />
                     <Image
                       src={book.cover}
                       alt={`${book.title} 표지`}
                       width={170}
                       height={241}
-                      className="relative rounded-lg shadow-2xl ring-1 ring-black/10"
+                      className="relative rounded-lg shadow-2xl ring-1 ring-black/10 group-hover:ring-white/30 group-hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.35)] transition-all duration-500"
                       priority={i === 1}
                     />
                   </div>
