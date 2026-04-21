@@ -57,15 +57,15 @@ export const EBOOKS: Ebook[] = [
     ],
   },
   {
-    id: "query-9",
-    title: "DB·쿼리 최적화 9강",
-    subtitle: "정규화 · 인덱스 · 실행 계획 · 캐시 · 페이지네이션",
-    cover: "/ebook/cover-query-9.png",
-    pdf: "/ebook/backend-cs-query-9.pdf",
-    downloadName: "백엔드-DB-쿼리최적화-9강.pdf",
-    pages: 172,
-    chapters: 9,
-    sizeMB: "5.6MB",
+    id: "query-12",
+    title: "DB·쿼리 최적화 12강",
+    subtitle: "정규화 · 인덱스 · 실행 계획 · 캐시 · 파티셔닝 · 샤딩",
+    cover: "/ebook/cover-query-12.png",
+    pdf: "/ebook/backend-cs-query-12.pdf",
+    downloadName: "백엔드-DB-쿼리최적화-12강.pdf",
+    pages: 221,
+    chapters: 12,
+    sizeMB: "6.6MB",
     theme: {
       accent: "blue",
       coverGlow: "from-blue-400/40 to-indigo-500/40",
@@ -79,14 +79,15 @@ export const EBOOKS: Ebook[] = [
       ogAccent: "#4f46e5",
     },
     description:
-      "조회를 느리게 만드는 원인과 구조적 해결책. 쿼리 한 줄 튜닝이 아니라 패턴이 반복될 때 적용 가능한 사고 틀을 만듭니다.",
+      "조회를 느리게 만드는 원인과 구조적 해결책, 그리고 테이블이 한 노드를 넘어설 때 쓰는 확장 전략까지. 쿼리 한 줄 튜닝이 아니라 패턴이 반복될 때 적용 가능한 사고 틀을 만듭니다.",
     toc: [
-      { part: "데이터베이스 설계 기초", chapters: ["정규화"] },
+      { part: "데이터베이스 설계 기초", chapters: ["정규화", "반정규화"] },
       { part: "인덱스와 실행 계획", chapters: ["인덱스 튜닝", "인덱스가 안 타는 이유", "EXPLAIN"] },
       {
         part: "조회 성능",
         chapters: ["커넥션 풀", "N+1", "캐시 전략", "캐시 스탬피드", "페이지네이션"],
       },
+      { part: "확장 전략", chapters: ["파티셔닝", "샤딩"] },
     ],
   },
   {

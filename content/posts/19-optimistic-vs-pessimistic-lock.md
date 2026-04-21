@@ -109,7 +109,7 @@ WHERE id = ?
   AND version = ?;
 ```
 
-영향받은 행 수가 0이 되면 충돌로 보고 `OptimisticLockException` 계열 예외를 던집니다.
+영향받은 행 수가 0이 되면 충돌로 보고 JPA provider는 `jakarta.persistence.OptimisticLockException`을 던집니다. Spring Data JPA 환경에서는 이 예외가 `org.springframework.orm.ObjectOptimisticLockingFailureException`으로 번역되어 전파되는 경우가 많으므로, 실제 예외 처리 코드에서는 둘 다 염두에 둬야 합니다.
 
 > **참고:** 낙관적 락은 "오래 잠가 두는 락"이 아닙니다. 일반 조회로 읽고, 저장 시점에 내가 봤던 버전이 아직 유효한지만 확인합니다.
 

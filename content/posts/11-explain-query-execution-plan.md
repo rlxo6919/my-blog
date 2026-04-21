@@ -130,14 +130,14 @@ id=2: 서브쿼리 (먼저 실행)
 복합 인덱스에서 **몇 번째 컬럼까지 실제로 사용됐는지** 파악하는 단서입니다.
 
 ```sql
--- utf8mb3 기준: (status VARCHAR(20), created_at DATETIME) 복합 인덱스
+-- utf8mb3 + NOT NULL 기준: (status VARCHAR(20), created_at DATETIME) 복합 인덱스
 -- status만 사용: key_len = 62  (20×3 + 2)
 -- status + created_at 사용: key_len = 67  (62 + 5)
 ```
 
 `key_len`이 예상보다 짧으면 복합 인덱스의 뒤쪽 컬럼이 활용되지 않은 것입니다. 이전 글에서 다뤘던 "범위 조건 이후 컬럼은 활용이 약해진다"가 여기서 구체적으로 확인됩니다.
 
-> **참고:** `key_len`은 문자셋과 NULL 허용 여부에 따라 달라집니다. 위 숫자는 예시일 뿐입니다. 예를 들어 `VARCHAR(20)`이 `utf8mb4`이면 최대 바이트는 `20×4 + 2(길이 저장)` = 82이며, `NOT NULL`이 아니면 1바이트가 추가됩니다.
+> **참고:** `key_len`은 문자셋과 NULL 허용 여부에 따라 달라집니다. 위 숫자는 `NOT NULL` 가정이며, `NULL` 허용 컬럼이면 1바이트가 더 붙습니다. 문자셋이 `utf8mb4`이면 `VARCHAR(20)`의 최대 바이트는 `20×4 + 2(길이 저장)` = 82까지 늘어날 수 있습니다.
 
 ### `ref` — 인덱스와 비교되는 값
 
@@ -164,7 +164,7 @@ id=2: 서브쿼리 (먼저 실행)
 | `Using index condition` | 인덱스 컨디션 푸시다운 (ICP) 적용 | 보통~좋음 |
 | `Using temporary` | 중간 결과 저장을 위해 임시 테이블 생성 | 주의 |
 | `Using filesort` | 인덱스 순서로 해결되지 않아 별도 정렬 수행 | 주의 |
-| `Using join buffer` | 조인 시 버퍼를 사용한 배치 처리 (BNL/Hash Join) | 주의 |
+| `Using join buffer` | 조인 시 버퍼를 사용한 배치 처리 (`Hash Join` 또는 `BKA`) | 주의 |
 
 `Using filesort`는 이름과 달리 반드시 디스크를 사용하는 것은 아닙니다. 메모리에서 처리될 수도 있지만, **인덱스 정렬을 활용하지 못했다**는 점이 핵심입니다.
 
