@@ -27,16 +27,16 @@ export async function generateMetadata(
       description: `"${tag}" 태그가 포함된 글 목록`,
       url: `https://www.ttukttak-coding.dev/tags/${slugged}`,
       type: "website",
-      images: [{ url: "/opengraph-image.webp", width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
       title: `#${tag} | 뚝딱코딩`,
       description: `"${tag}" 태그가 포함된 글 목록`,
-      images: ["/opengraph-image.webp"],
     },
   };
 }
+
+const SITE_URL = "https://www.ttukttak-coding.dev";
 
 export default async function TagPage(props: PageProps<"/tags/[tag]">) {
   const { tag: slug } = await props.params;
@@ -45,8 +45,32 @@ export default async function TagPage(props: PageProps<"/tags/[tag]">) {
 
   if (!tag || posts.length === 0) notFound();
 
+  const slugged = tagToSlug(tag);
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: `#${tag}`,
+    description: `"${tag}" 태그가 포함된 글 목록`,
+    url: `${SITE_URL}/tags/${slugged}`,
+    inLanguage: "ko-KR",
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: posts.length,
+      itemListElement: posts.map((post, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        url: `${SITE_URL}/posts/${post.slug}`,
+        name: post.title,
+      })),
+    },
+  };
+
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <h1 className="text-3xl font-bold mb-2">#{tag}</h1>
       <p className="text-gray-500 dark:text-gray-400 mb-8">{posts.length}개의 글</p>
       <div className="space-y-1">

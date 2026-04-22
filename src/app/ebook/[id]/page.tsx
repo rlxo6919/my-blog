@@ -19,6 +19,8 @@ export async function generateMetadata(
 
   const description = `${book.subtitle} — ${book.chapters}강 ${book.pages}페이지, 무료 PDF로 받으실 수 있습니다.`;
 
+  const ogImage = `/ebook/${book.id}/opengraph-image`;
+
   return {
     title: `${book.title} — 무료 PDF`,
     description,
@@ -28,11 +30,13 @@ export async function generateMetadata(
       description,
       url: `${SITE_URL}/ebook/${book.id}`,
       type: "article",
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `${book.title} 표지` }],
     },
     twitter: {
       card: "summary_large_image",
       title: `${book.title} — 무료 PDF`,
       description,
+      images: [ogImage],
     },
   };
 }
