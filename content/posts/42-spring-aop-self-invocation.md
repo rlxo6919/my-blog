@@ -79,11 +79,12 @@ class CheckoutService(
 - 빈이 인터페이스를 구현하고 있으면 기본적으로 `java.lang.reflect.Proxy`로 프록시를 만듭니다
 - 프록시는 **인터페이스 타입**으로만 캐스팅 가능합니다. 구체 클래스로 캐스팅하면 `ClassCastException`이 납니다
 
-### CGLIB (현재 Spring은 ByteBuddy 기반)
+### CGLIB (Spring이 repackage한 fork)
 
 - **서브클래스 기반**입니다. 원본 클래스를 상속한 서브클래스를 런타임에 생성합니다
 - 인터페이스가 없어도 프록시를 만들 수 있습니다
 - 서브클래싱이라 **`final` 클래스와 `final` 메서드는 프록시를 만들 수 없습니다**
+- Spring Framework 6은 **CGLIB을 직접 fork하여 `spring-core` 안에 repackage**해서 씁니다 (`org.springframework.cglib.*`)
 
 ### Spring Boot의 기본값
 

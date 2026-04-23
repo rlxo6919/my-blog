@@ -186,7 +186,9 @@ COMMIT
 
 ### 전제 조건
 
-`NESTED`는 **JDBC 드라이버가 세이브포인트를 지원**해야 동작합니다. 대부분의 관계형 DB는 지원하지만, JPA/Hibernate는 기본 `JpaTransactionManager`에서 `NESTED`를 지원하지 않습니다. 그래서 JPA 환경에서 `NESTED`를 쓰려면 제약이 많습니다. 실무에서 `NESTED`는 **JDBC 기반 반복 처리 중 일부만 스킵**하는 batch job에서 가끔 쓰입니다.
+`NESTED`는 **JDBC 드라이버가 세이브포인트를 지원**해야 동작합니다. 대부분의 관계형 DB는 지원합니다.
+
+`JpaTransactionManager`도 `NESTED` 자체는 지원하지만, 기본값이 **`nestedTransactionAllowed=false`** 로 꺼져 있습니다. 켜더라도 **세이브포인트는 JDBC 커넥션 수준에서만 동작**하기 때문에, 롤백 시점에 **`EntityManager`의 1차 캐시 상태는 되돌아가지 않습니다**. 영속성 컨텍스트 관점에서는 부분 롤백이 깔끔하게 이루어지지 않으므로, JPA 환경에서는 `NESTED`보다 **`REQUIRES_NEW`로 트랜잭션을 분리**하는 편이 안전합니다. 실무에서 `NESTED`는 **JDBC 기반 반복 처리 중 일부만 스킵**하는 batch job에서 가끔 쓰입니다.
 
 ## Phase 6. 롤백 규칙 — 기본은 `RuntimeException`만
 
