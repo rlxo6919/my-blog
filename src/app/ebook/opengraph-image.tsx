@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { EBOOKS, EBOOK_TOTAL_CHAPTERS, EBOOK_TOTAL_PAGES } from "@/lib/ebooks";
 
-export const alt = "백엔드 면접 핵심 노트 — 무료 PDF 3권";
+export const alt = "백엔드 면접 핵심 노트 — 무료 PDF";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -19,7 +19,7 @@ export default async function Image() {
     ...EBOOKS.map((b) => loadCover(b.cover)),
   ]);
 
-  const [coverA, coverB, coverC] = covers;
+  const [coverA, coverB, coverC, coverD] = covers;
 
   return new ImageResponse(
     (
@@ -130,13 +130,13 @@ export default async function Image() {
               style={{
                 display: "flex",
                 marginTop: 24,
-                fontSize: 26,
+                fontSize: 24,
                 fontWeight: 600,
                 color: "#475569",
                 lineHeight: 1.35,
               }}
             >
-              동시성·트랜잭션 / DB·쿼리 최적화 / 네트워크
+              동시성·트랜잭션 / DB·쿼리 / Spring·JPA / 네트워크
             </div>
           </div>
 
@@ -160,7 +160,7 @@ export default async function Image() {
           </div>
         </div>
 
-        {/* Right: stacked covers */}
+        {/* Right: stacked covers (4 books, 2 in front, 2 in back) */}
         <div
           style={{
             width: 520,
@@ -170,40 +170,58 @@ export default async function Image() {
             justifyContent: "center",
           }}
         >
+          {/* rear-left */}
           <img
             src={coverA}
-            width={230}
-            height={326}
+            width={200}
+            height={283}
             style={{
               position: "absolute",
-              left: 10,
-              top: 130,
-              transform: "rotate(-8deg)",
+              left: -10,
+              top: 150,
+              transform: "rotate(-14deg)",
               borderRadius: 10,
-              boxShadow: "0 20px 40px rgba(15,23,42,0.25)",
+              boxShadow: "0 20px 40px rgba(15,23,42,0.22)",
             }}
           />
+          {/* rear-right */}
           <img
-            src={coverC}
-            width={230}
-            height={326}
+            src={coverD}
+            width={200}
+            height={283}
             style={{
               position: "absolute",
-              right: 10,
-              top: 130,
-              transform: "rotate(8deg)",
+              right: -10,
+              top: 150,
+              transform: "rotate(14deg)",
               borderRadius: 10,
-              boxShadow: "0 20px 40px rgba(15,23,42,0.25)",
+              boxShadow: "0 20px 40px rgba(15,23,42,0.22)",
             }}
           />
+          {/* front-left (pop) */}
           <img
             src={coverB}
-            width={260}
-            height={368}
+            width={235}
+            height={332}
             style={{
               position: "absolute",
-              left: 130,
-              top: 100,
+              left: 75,
+              top: 112,
+              transform: "rotate(-4deg)",
+              borderRadius: 12,
+              boxShadow: "0 28px 56px rgba(15,23,42,0.35)",
+            }}
+          />
+          {/* front-right (pop) */}
+          <img
+            src={coverC}
+            width={235}
+            height={332}
+            style={{
+              position: "absolute",
+              right: 75,
+              top: 112,
+              transform: "rotate(4deg)",
               borderRadius: 12,
               boxShadow: "0 28px 56px rgba(15,23,42,0.35)",
             }}

@@ -5,22 +5,24 @@ import { EBOOKS, EBOOK_TOTAL_CHAPTERS, EBOOK_TOTAL_PAGES, type Ebook } from "@/l
 
 const SITE_URL = "https://www.ttukttak-coding.dev";
 
+const EBOOK_DESCRIPTION =
+  "동시성·트랜잭션, DB·쿼리 최적화, Spring·JPA, 네트워크 — 주제별 4권을 무료 PDF로 받으실 수 있습니다.";
+
 export const metadata: Metadata = {
   title: "전자책 — 백엔드 면접 핵심 노트",
-  description:
-    "동시성·트랜잭션, DB·쿼리 최적화, 네트워크 — 주제별 3권을 무료 PDF로 받으실 수 있습니다.",
+  description: EBOOK_DESCRIPTION,
   alternates: { canonical: "/ebook" },
   openGraph: {
     title: "백엔드 면접 핵심 노트 — 무료 PDF",
-    description:
-      "동시성·트랜잭션, DB·쿼리 최적화, 네트워크 — 주제별 3권을 무료 PDF로 받으실 수 있습니다.",
+    description: EBOOK_DESCRIPTION,
     url: `${SITE_URL}/ebook`,
     type: "article",
   },
   twitter: {
     card: "summary_large_image",
     title: "백엔드 면접 핵심 노트 — 무료 PDF",
-    description: "동시성·트랜잭션, DB·쿼리 최적화, 네트워크 — 주제별 3권 무료.",
+    description:
+      "동시성·트랜잭션, DB·쿼리 최적화, Spring·JPA, 네트워크 — 주제별 4권 무료.",
   },
 };
 
@@ -54,8 +56,8 @@ export default function EbookPage() {
             </span>
           </h1>
           <p className="text-sm sm:text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto mb-8 leading-relaxed">
-            동시성·트랜잭션 / DB·쿼리 최적화 / 네트워크 —<br className="hidden sm:inline" />
-            주제별 3권을 무료 PDF로 받으세요.
+            동시성·트랜잭션 / DB·쿼리 최적화 / Spring·JPA / 네트워크 —<br className="hidden sm:inline" />
+            주제별 {EBOOKS.length}권을 무료 PDF로 받으세요.
           </p>
 
           {/* 통계 바 */}
@@ -70,18 +72,29 @@ export default function EbookPage() {
           </div>
 
           {/* 책 표지 스택 비주얼 */}
-          <div className="relative h-[180px] sm:h-[320px] mx-auto max-w-md mb-2 overflow-visible">
+          <div className="relative h-[180px] sm:h-[320px] mx-auto max-w-md sm:max-w-2xl mb-2 overflow-visible">
             {EBOOKS.map((book, i) => {
-              const positions = [
-                "-translate-x-[90%] sm:-translate-x-[110%] -rotate-[8deg] sm:-rotate-[10deg] z-10",
-                "-translate-x-1/2 scale-105 sm:scale-110 z-30",
-                "-translate-x-[10%] sm:translate-x-[10%] rotate-[8deg] sm:rotate-[10deg] z-20",
-              ];
+              const positionsByCount: Record<number, string[]> = {
+                3: [
+                  "-translate-x-[90%] sm:-translate-x-[110%] -rotate-[8deg] sm:-rotate-[10deg] z-10",
+                  "-translate-x-1/2 scale-105 sm:scale-110 z-30",
+                  "-translate-x-[10%] sm:translate-x-[10%] rotate-[8deg] sm:rotate-[10deg] z-20",
+                ],
+                4: [
+                  "-translate-x-[160%] sm:-translate-x-[185%] -rotate-[12deg] sm:-rotate-[14deg] z-10",
+                  "-translate-x-[85%] sm:-translate-x-[90%] -rotate-[4deg] sm:-rotate-[5deg] scale-[1.03] sm:scale-[1.06] z-30",
+                  "-translate-x-[15%] sm:-translate-x-[10%] rotate-[4deg] sm:rotate-[5deg] scale-[1.03] sm:scale-[1.06] z-20",
+                  "translate-x-[60%] sm:translate-x-[85%] rotate-[12deg] sm:rotate-[14deg] z-10",
+                ],
+              };
+              const positions = positionsByCount[EBOOKS.length] ?? positionsByCount[4];
+              const position = positions[i] ?? "-translate-x-1/2 z-10";
+              const isFront = EBOOKS.length === 3 ? i === 1 : i === 1 || i === 2;
               return (
                 <Link
                   key={book.id}
                   href={`/ebook/${book.id}`}
-                  className={`group absolute top-0 left-1/2 ${positions[i]} transition-all duration-500 ease-out hover:z-40 hover:-translate-y-6 hover:scale-[1.28] hover:rotate-0`}
+                  className={`group absolute top-0 left-1/2 ${position} transition-all duration-500 ease-out hover:z-40 hover:-translate-y-6 hover:scale-[1.28] hover:rotate-0`}
                   aria-label={`${book.title} 상세 페이지로 이동`}
                 >
                   <div className="relative">
@@ -94,7 +107,7 @@ export default function EbookPage() {
                       width={170}
                       height={241}
                       className="relative rounded-lg shadow-2xl ring-1 ring-black/10 group-hover:ring-white/30 group-hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.35)] transition-all duration-500 w-[100px] sm:w-[170px] h-auto"
-                      priority={i === 1}
+                      priority={isFront}
                     />
                   </div>
                 </Link>
