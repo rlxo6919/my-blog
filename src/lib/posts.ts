@@ -109,6 +109,62 @@ export function getAdjacentPosts(slug: string) {
   };
 }
 
+export interface SeriesInfo {
+  tag: string;
+  posts: Post[]; // date ASC — 연재 순서
+  position: number; // 0-based index of current post
+}
+
+/**
+ * 현재 글의 대표 태그(`tags[0]`)로 시리즈를 감지합니다.
+ * 같은 태그를 공유하는 글이 `minSize` 이상일 때만 시리즈로 간주합니다.
+ */
+export function getSeriesForPost(
+  slug: string,
+  minSize = 3
+): SeriesInfo | null {
+  const post = getPostBySlug(slug);
+  if (!post || post.tags.length === 0) return null;
+
+  const primaryTag = post.tags[0];
+  const seriesPosts = getAllPosts()
+    .filter((p) => p.tags.includes(primaryTag))
+    .sort((a, b) => (a.date < b.date ? -1 : 1)); // ASC
+
+  if (seriesPosts.length < minSize) return null;
+
+  const position = seriesPosts.findIndex((p) => p.slug === slug);
+  if (position === -1) return null;
+
+  return { tag: primaryTag, posts: seriesPosts, position };
+}
+
+/**
+ * 시리즈에 속하면 시리즈 내 이전/다음 글을, 아니면 전체 시간순 이전/다음을 반환합니다.
+ * UI의 "이전 글"은 항상 더 오래된 글(= 시리즈에서는 이전 편)을 의미합니다.
+ */
+export function getSeriesAdjacent(slug: string): {
+  prev: Post | null;
+  next: Post | null;
+  inSeries: boolean;
+  seriesTag: string | null;
+} {
+  const series = getSeriesForPost(slug);
+  if (series) {
+    return {
+      prev: series.position > 0 ? series.posts[series.position - 1] : null,
+      next:
+        series.position < series.posts.length - 1
+          ? series.posts[series.position + 1]
+          : null,
+      inSeries: true,
+      seriesTag: series.tag,
+    };
+  }
+  const adj = getAdjacentPosts(slug);
+  return { ...adj, inSeries: false, seriesTag: null };
+}
+
 export function getRelatedPosts(slug: string, limit = 3): Post[] {
   const posts = getAllPosts();
   const target = posts.find((p) => p.slug === slug);

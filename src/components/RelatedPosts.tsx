@@ -8,6 +8,8 @@ interface RelatedPost {
   date: string;
   category: Category;
   readingTime: number;
+  excerpt?: string;
+  matchedTags?: string[];
 }
 
 const CATEGORY_STYLES: Record<Category, { badge: string; dot: string }> = {
@@ -53,18 +55,37 @@ export default function RelatedPosts({
             <Link
               key={post.slug}
               href={`/posts/${post.slug}`}
-              className="group p-4 rounded-xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 bg-white dark:bg-gray-900/50 hover:shadow-lg hover:shadow-gray-100/50 dark:hover:shadow-none transition-all duration-300"
+              className="group p-4 rounded-xl border border-gray-100 dark:border-gray-800 hover:border-blue-200 dark:hover:border-blue-900 bg-white dark:bg-gray-900/50 hover:shadow-lg hover:shadow-gray-100/50 dark:hover:shadow-none transition-all duration-300 flex flex-col"
             >
-              <span
-                className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full border ${style.badge} mb-2`}
-              >
-                <span className={`w-1.5 h-1.5 rounded-full ${style.dot}`} />
-                {CATEGORY_LABELS[post.category]}
-              </span>
-              <h3 className="text-sm font-semibold leading-snug line-clamp-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              <div className="flex items-center gap-2 mb-2">
+                <span
+                  className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full border ${style.badge}`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${style.dot}`} />
+                  {CATEGORY_LABELS[post.category]}
+                </span>
+              </div>
+              <h3 className="text-sm font-semibold leading-snug line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 {post.title}
               </h3>
-              <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2">
+              {post.excerpt && (
+                <p className="mt-2 text-xs text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-2">
+                  {post.excerpt}
+                </p>
+              )}
+              {post.matchedTags && post.matchedTags.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {post.matchedTags.slice(0, 2).map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-[10px] font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 px-1.5 py-0.5 rounded"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <div className="mt-auto pt-2 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2">
                 <time>{post.date}</time>
                 <span>&middot;</span>
                 <span>{post.readingTime}분</span>

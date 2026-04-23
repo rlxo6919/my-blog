@@ -18,22 +18,46 @@ const TOPIC_PILLARS: {
   accent: string;
 }[] = [
   {
+    tag: "영속성 컨텍스트",
+    title: "JPA 영속성 컨텍스트",
+    description: "1차 캐시, 변경 감지, flush — JPA 동작의 모든 기반",
+    accent:
+      "from-purple-50 to-fuchsia-50 dark:from-purple-950/20 dark:to-fuchsia-950/20 border-purple-200/60 dark:border-purple-900/40",
+  },
+  {
+    tag: "트랜잭션",
+    title: "트랜잭션",
+    description: "ACID, 격리 수준, @Transactional 전파까지 한 흐름으로",
+    accent:
+      "from-rose-50 to-pink-50 dark:from-rose-950/20 dark:to-pink-950/20 border-rose-200/60 dark:border-rose-900/40",
+  },
+  {
     tag: "동시성 제어",
     title: "동시성 제어",
     description: "격리 수준, MVCC, 락까지 — 읽기/쓰기 충돌을 다루는 원리",
-    accent: "from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 border-amber-200/60 dark:border-amber-900/40",
+    accent:
+      "from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 border-amber-200/60 dark:border-amber-900/40",
   },
   {
     tag: "쿼리 최적화",
     title: "쿼리 최적화",
     description: "실행 계획, 인덱스, 배치 조회 — 느린 쿼리를 구조로 푸는 법",
-    accent: "from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-blue-200/60 dark:border-blue-900/40",
+    accent:
+      "from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-blue-200/60 dark:border-blue-900/40",
+  },
+  {
+    tag: "N+1",
+    title: "N+1 문제",
+    description: "루프 안의 개별 쿼리 · Fetch 전략 · @BatchSize 해결 도구",
+    accent:
+      "from-cyan-50 to-sky-50 dark:from-cyan-950/20 dark:to-sky-950/20 border-cyan-200/60 dark:border-cyan-900/40",
   },
   {
     tag: "TCP/IP",
     title: "네트워크 기초",
     description: "OSI 계층부터 HTTP/3, TLS 핸드셰이크까지 차근차근",
-    accent: "from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 border-emerald-200/60 dark:border-emerald-900/40",
+    accent:
+      "from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 border-emerald-200/60 dark:border-emerald-900/40",
   },
 ];
 

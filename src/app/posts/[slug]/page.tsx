@@ -3,7 +3,8 @@ import Link from "next/link";
 import {
   getAllPosts,
   getPostBySlug,
-  getAdjacentPosts,
+  getSeriesAdjacent,
+  getSeriesForPost,
   getRelatedPosts,
   markdownToHtml,
   extractToc,
@@ -20,6 +21,7 @@ import ShareButtons from "@/components/ShareButtons";
 import Giscus from "@/components/Giscus";
 import RelatedPosts from "@/components/RelatedPosts";
 import DesktopToc from "@/components/DesktopToc";
+import SeriesNav from "@/components/SeriesNav";
 
 export function generateStaticParams() {
   const posts = getAllPosts();
@@ -68,7 +70,8 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
 
   const content = await markdownToHtml(post.content);
   const toc = extractToc(post.content);
-  const { prev, next } = getAdjacentPosts(slug);
+  const series = getSeriesForPost(slug);
+  const { prev, next, inSeries } = getSeriesAdjacent(slug);
   const related = getRelatedPosts(slug, 3);
 
   const articleJsonLd = {
@@ -176,6 +179,14 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
             )}
           </header>
 
+          {series && (
+            <SeriesNav
+              tag={series.tag}
+              posts={series.posts.map(({ slug, title }) => ({ slug, title }))}
+              currentSlug={slug}
+            />
+          )}
+
           <MobileToc toc={toc} />
 
           <div
@@ -207,7 +218,7 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
-                    이전 글
+                    {inSeries ? "이전 편" : "이전 글"}
                   </span>
                   <p className="text-sm font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
                     {prev.title}
@@ -222,7 +233,7 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
                   className="group p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 bg-white dark:bg-gray-900/50 hover:shadow-lg hover:shadow-gray-100/50 dark:hover:shadow-none transition-all duration-300 text-right"
                 >
                   <span className="flex items-center justify-end gap-1 text-xs text-gray-400 dark:text-gray-500 mb-2">
-                    다음 글
+                    {inSeries ? "다음 편" : "다음 글"}
                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
@@ -239,12 +250,15 @@ export default async function PostPage(props: PageProps<"/posts/[slug]">) {
 
           {/* 관련 글 */}
           <RelatedPosts
-            posts={related.map(({ slug, title, date, category, readingTime }) => ({
-              slug,
-              title,
-              date,
-              category,
-              readingTime,
+            title="다음으로 읽어볼 글"
+            posts={related.map((r) => ({
+              slug: r.slug,
+              title: r.title,
+              date: r.date,
+              category: r.category,
+              readingTime: r.readingTime,
+              excerpt: r.excerpt,
+              matchedTags: r.tags.filter((t) => post.tags.includes(t)),
             }))}
           />
 
