@@ -33,9 +33,9 @@ export const EBOOKS: Ebook[] = [
     cover: "/ebook/cover-concurrency-10.png",
     pdf: "/ebook/backend-cs-concurrency-10.pdf",
     downloadName: "백엔드-동시성-트랜잭션-10강.pdf",
-    pages: 175,
+    pages: 176,
     chapters: 10,
-    sizeMB: "5.4MB",
+    sizeMB: "5.3MB",
     theme: {
       accent: "amber",
       coverGlow: "from-amber-300/40 to-orange-500/40",
@@ -91,15 +91,56 @@ export const EBOOKS: Ebook[] = [
     ],
   },
   {
+    id: "jpa-spring-8",
+    title: "Spring · JPA 완전 정복 8강",
+    subtitle: "영속성 컨텍스트 · Fetch 전략 · @Transactional · AOP · 배치",
+    cover: "/ebook/cover-jpa-spring-8.png",
+    pdf: "/ebook/backend-cs-jpa-spring-8.pdf",
+    downloadName: "백엔드-Spring-JPA-완전정복-8강.pdf",
+    pages: 138,
+    chapters: 8,
+    sizeMB: "5.0MB",
+    theme: {
+      accent: "purple",
+      coverGlow: "from-purple-400/40 to-fuchsia-500/40",
+      badgeBg: "bg-purple-100/80 dark:bg-purple-900/40 backdrop-blur",
+      badgeText: "text-purple-700 dark:text-purple-300",
+      chipBg:
+        "bg-purple-50 dark:bg-purple-950/40 border-purple-200/60 dark:border-purple-800/40",
+      chipText: "text-purple-800 dark:text-purple-200",
+      button:
+        "bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600 shadow-purple-500/30",
+      ogBg: "linear-gradient(135deg, #faf5ff 0%, #f3e8ff 50%, #fae8ff 100%)",
+      ogAccent: "#9333ea",
+    },
+    description:
+      "영속성 컨텍스트라는 단일 구조로 JPA의 변경 감지·Fetch·트랜잭션·배치를 풀어내고, Spring AOP 프록시가 @Transactional을 어떻게 가능하게 만드는지 정리합니다.",
+    toc: [
+      { part: "영속성 컨텍스트", chapters: ["1차 캐시 · 변경 감지", "flush · OSIV"] },
+      {
+        part: "Fetch 전략",
+        chapters: ["LAZY · EAGER · N+1", "fetch join · @EntityGraph · @BatchSize"],
+      },
+      {
+        part: "Spring 트랜잭션과 AOP",
+        chapters: ["@Transactional 전파", "AOP · self-invocation"],
+      },
+      {
+        part: "성능과 엔티티 다루기",
+        chapters: ["배치 쓰기 · IDENTITY", "merge vs persist"],
+      },
+    ],
+  },
+  {
     id: "network-7",
     title: "네트워크 7강",
     subtitle: "OSI · TCP/UDP · HTTP · TLS · DNS",
     cover: "/ebook/cover-network-7.png",
     pdf: "/ebook/backend-cs-network-7.pdf",
     downloadName: "백엔드-네트워크-7강.pdf",
-    pages: 133,
+    pages: 135,
     chapters: 7,
-    sizeMB: "4.7MB",
+    sizeMB: "4.6MB",
     theme: {
       accent: "emerald",
       coverGlow: "from-emerald-300/40 to-teal-500/40",
