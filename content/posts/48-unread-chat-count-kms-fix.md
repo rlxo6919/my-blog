@@ -1,6 +1,6 @@
 ---
 title: "미독 채팅 개수 API 성능 개선기 — `SELECT *` + 앱 레벨 카운트가 KMS를 두드린 이야기"
-date: "2026-05-02"
+date: "2026-04-23"
 category: "troubleshooting"
 tags: ["쿼리 최적화", "커넥션 풀"]
 excerpt: "미독 채팅 개수를 구하는 단순한 API가 커넥션 풀을 고갈시키던 원인을 추적해, `SELECT *` + 앱 레벨 `count`와 `@Convert(KmsStringConverter)` 조합이 만든 KMS Decrypt 호출 폭주를 드러내고, 단일 `COUNT(*)` 집계 쿼리로 전환해 해결한 과정을 정리합니다."
